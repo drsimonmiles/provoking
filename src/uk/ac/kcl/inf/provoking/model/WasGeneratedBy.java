@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
+import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 
 public class WasGeneratedBy extends AttributeHolder implements Description {
     public final Activity _generater;
@@ -15,7 +16,7 @@ public class WasGeneratedBy extends AttributeHolder implements Description {
         _generater = generater;
         _generated = generated;
         if (time != null) {
-            setAttribute (Term.atTime.uri (), time);
+            addAttribute (Term.atTime.uri (), time);
         }
     }
 

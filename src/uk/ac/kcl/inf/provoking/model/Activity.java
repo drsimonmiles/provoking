@@ -1,6 +1,8 @@
 package uk.ac.kcl.inf.provoking.model;
 
+import java.net.URI;
 import java.util.Date;
+import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 
 public class Activity extends AttributeHolder implements Description {
     private Date _startedAt;
@@ -8,20 +10,14 @@ public class Activity extends AttributeHolder implements Description {
     
     public Activity () {
     }
-    
-    public Activity (Object identifier) {
-        super (identifier);
-    }
 
     public Activity (Date startedAt, Date endedAt) {
-        setStartedAt (startedAt);
-        setEndedAt (endedAt);
+        _startedAt = startedAt;
+        _endedAt = endedAt;
     }
-
-    public Activity (Object identifier, Date startedAt, Date endedAt) {
-        super (identifier);
-        setStartedAt (startedAt);
-        setEndedAt (endedAt);
+    
+    public Activity (URI identifier, boolean isReference) {
+        super (identifier, !isReference);
     }
 
     public Date getStartedAt () {
@@ -29,8 +25,9 @@ public class Activity extends AttributeHolder implements Description {
     }
 
     public void setStartedAt (Date startedAt) {
-        if (startedAt != null)
+        if (startedAt != null) {
             _startedAt = startedAt;
+        }
     }
 
     public Date getEndedAt () {
@@ -38,7 +35,8 @@ public class Activity extends AttributeHolder implements Description {
     }
 
     public void setEndedAt (Date endedAt) {
-        if (endedAt != null)
+        if (endedAt != null) {
             _endedAt = endedAt;
+        }
     }
 }

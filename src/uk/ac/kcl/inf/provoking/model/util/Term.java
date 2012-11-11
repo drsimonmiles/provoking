@@ -1,5 +1,6 @@
-package uk.ac.kcl.inf.provoking.model;
+package uk.ac.kcl.inf.provoking.model.util;
 
+import uk.ac.kcl.inf.provoking.model.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
