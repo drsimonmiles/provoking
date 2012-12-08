@@ -17,9 +17,15 @@ public class Activity extends AttributeHolder implements Description {
     }
     
     public Activity (URI identifier, boolean isReference) {
-        super (identifier, !isReference);
+        super (identifier, isReference);
     }
 
+    public Activity (URI identifier, Date startedAt, Date endedAt) {
+        super (identifier, false);
+        _startedAt = startedAt;
+        _endedAt = endedAt;
+    }
+    
     public Date getStartedAt () {
         return _startedAt;
     }

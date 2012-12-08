@@ -8,6 +8,6 @@ public class Agent extends AttributeHolder implements Description {
     }
     
     public Agent (URI identifier, boolean isReference) {
-        super (identifier, !isReference);
+        super (identifier, isReference);
     }
 }

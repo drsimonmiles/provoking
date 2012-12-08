@@ -1,7 +1,5 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import java.util.Map;
-
 public class ValueGenerator<T> implements Generator<T> {
     private T _value;
     
@@ -10,7 +8,7 @@ public class ValueGenerator<T> implements Generator<T> {
     }
 
     @Override
-    public T generateValue (Map<String, Object> context) {
+    public T generateValue () {
         return _value;
     }
 

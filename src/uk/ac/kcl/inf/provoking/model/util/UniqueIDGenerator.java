@@ -10,7 +10,7 @@ public class UniqueIDGenerator implements Generator<URI> {
     public static final String LAST_VALUE = "IdentifierGenerator:lastValue";
     
     @Override
-    public URI generateValue (Map<String, Object> context) throws GenerationException {
+    public URI generateValue () throws GenerationException {
         Integer last = (Integer) context.get (LAST_VALUE);
         String prefix = (String) context.get (PREFIX);
         

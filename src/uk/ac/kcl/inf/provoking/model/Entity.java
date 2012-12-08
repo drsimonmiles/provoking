@@ -8,6 +8,6 @@ public class Entity extends AttributeHolder implements Description {
     }
     
     protected Entity (URI identifier, boolean isReference) {
-        super (identifier, !isReference);
+        super (identifier, isReference);
     }
 }

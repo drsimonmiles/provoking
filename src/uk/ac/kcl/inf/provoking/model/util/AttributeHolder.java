@@ -7,17 +7,14 @@ import uk.ac.kcl.inf.provoking.model.Attribute;
 
 public class AttributeHolder extends Identified {
     private final Set<Attribute> _attributes;
-    private final boolean _attributesAllowed;
 
     protected AttributeHolder () {
         _attributes = new HashSet<> ();
-        _attributesAllowed = true;
     }
 
-    protected AttributeHolder (Object identifier, boolean attributesAllowed) {
-        super (identifier);
+    protected AttributeHolder (Object identifier, boolean isReference) {
+        super (identifier, isReference);
         _attributes = new HashSet<> ();
-        _attributesAllowed = attributesAllowed;
     }
     
     public void addAttribute (Attribute attribute) {
@@ -41,12 +38,8 @@ public class AttributeHolder extends Identified {
         addAttribute (newAttribute);
     }
 
-    public boolean allowsAttributes () {
-        return _attributesAllowed;
-    }
-    
     private void checkAttributesAllowed () {
-        if (!_attributesAllowed) {
+        if (isReference ()) {
             throw new UnsupportedOperationException ("No attributes allowed on this type");
         }
     }

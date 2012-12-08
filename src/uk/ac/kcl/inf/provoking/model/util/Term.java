@@ -1,13 +1,12 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import uk.ac.kcl.inf.provoking.model.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 public enum Term {
-    Account, Activity, activity, Agent, agent, actedOnBehalfOf, alternateOf, Association, atTime, endedAtTime, 
+    Account, Activity, activity, Agent, agent, actedOnBehalfOf, alternateOf, Association, endedAtTime, 
     Entity, entity, hadOriginalSource, Location,
     Note, Organization,
     Person, Plan, qualifiedAssociation, qualifiedUsage, SoftwareAgent, startedAtTime, Usage,
