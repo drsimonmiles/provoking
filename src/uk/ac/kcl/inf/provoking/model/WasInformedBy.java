@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model;
 
-import java.net.URI;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 
 public class WasInformedBy extends AttributeHolder implements Description {
@@ -12,8 +11,8 @@ public class WasInformedBy extends AttributeHolder implements Description {
         _informer = informer;
     }
 
-    public WasInformedBy (URI identifier, Activity informed, Activity informer) {
-        super (identifier, false);
+    public WasInformedBy (Object identifier, Activity informed, Activity informer) {
+        super (identifier);
         _informed = informed;
         _informer = informer;
     }
@@ -32,5 +31,11 @@ public class WasInformedBy extends AttributeHolder implements Description {
 
     public void setInformer (Activity informer) {
         _informer = informer;
+    }
+
+    public static WasInformedBy reference (Object identifier) {
+        WasInformedBy reference = new WasInformedBy (identifier, null, null);
+        reference.setIsReference (true);
+        return reference;
     }
 }

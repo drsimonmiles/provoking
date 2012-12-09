@@ -1,8 +1,6 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
 
 public class Identified {
     private Generator<? extends URI> _identifier;
@@ -12,10 +10,10 @@ public class Identified {
         _identifier = UniqueIDGenerator.singleton;
         _isReference = false;
     }
-    
-    public Identified (Object identifier, boolean isReference) {
+
+    public Identified (Object identifier) {
         _identifier = new ValueGenerator (identifier);
-        _isReference = isReference;
+        _isReference = false;
     }
 
     public Generator<? extends URI> getIdentifierGenerator () {

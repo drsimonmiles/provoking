@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import uk.ac.kcl.inf.provoking.model.Attribute;
@@ -12,8 +11,8 @@ public class AttributeHolder extends Identified {
         _attributes = new HashSet<> ();
     }
 
-    protected AttributeHolder (Object identifier, boolean isReference) {
-        super (identifier, isReference);
+    protected AttributeHolder (Object identifier) {
+        super (identifier);
         _attributes = new HashSet<> ();
     }
     
@@ -23,13 +22,13 @@ public class AttributeHolder extends Identified {
         _attributes.add (attribute);
     }
 
-    public void addAttribute (URI key, Object value) {
+    public void addAttribute (Object key, Object value) {
         checkAttributesAllowed ();
         
         addAttribute (new Attribute (key, value));
     }
 
-    public void addGeneratedAttribute (URI key, Generator generator) {
+    public void addGeneratedAttribute (Object key, Generator generator) {
         checkAttributesAllowed ();
         
         Attribute newAttribute = new Attribute (key);
@@ -50,7 +49,7 @@ public class AttributeHolder extends Identified {
         return _attributes;
     }
     
-    public Object getAttributeValue (URI key) {
+    public Object getAttributeValue (Object key) {
         checkAttributesAllowed ();
         
         Set<Object> all = getAllAttributeValues (key);
@@ -62,7 +61,7 @@ public class AttributeHolder extends Identified {
         }
     }
 
-    public Set<Object> getAllAttributeValues (URI key) {
+    public Set<Object> getAllAttributeValues (Object key) {
         checkAttributesAllowed ();
         
         Set<Object> values = new HashSet<> ();
@@ -74,7 +73,7 @@ public class AttributeHolder extends Identified {
         return values;
     }
 
-    public Set<Attribute> getAllAttributes (URI key) {
+    public Set<Attribute> getAllAttributes (Object key) {
         checkAttributesAllowed ();
         
         Set<Attribute> found = new HashSet<> ();
@@ -88,7 +87,7 @@ public class AttributeHolder extends Identified {
         return found;
     }
     
-    public void removeAttributes (URI key) {
+    public void removeAttributes (Object key) {
         checkAttributesAllowed ();
         
         Set<Attribute> toRemove = new HashSet<> ();

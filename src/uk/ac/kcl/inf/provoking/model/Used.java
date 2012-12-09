@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model;
 
-import java.net.URI;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
@@ -19,16 +18,17 @@ public class Used extends TimestampedEdge {
         _used = used;
     }
 
-    public Used (URI identifier, Activity user, Entity used) {
+    public Used (Object identifier, Activity user, Entity used) {
         super (identifier);
         _user = user;
         _used = used;
     }
 
-    public Used (URI identifier, Activity user, Entity used, Date time) {
-        super (identifier, time);
+    public Used (Object identifier, Activity user, Entity used, Date time) {
+        super (identifier);
         _user = user;
         _used = used;
+        setTime (time);
     }
 
     public Activity getUser () {
@@ -45,5 +45,11 @@ public class Used extends TimestampedEdge {
 
     public void setUsed (Entity used) {
         _used = used;
+    }
+
+    public static Used reference (Object identifier) {
+        Used reference = new Used (identifier, null, null);
+        reference.setIsReference (true);
+        return reference;
     }
 }

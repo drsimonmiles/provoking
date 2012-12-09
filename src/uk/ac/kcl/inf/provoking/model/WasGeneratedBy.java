@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model;
 
-import java.net.URI;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
@@ -19,16 +18,17 @@ public class WasGeneratedBy extends TimestampedEdge {
         _generated = generated;
     }
 
-    public WasGeneratedBy (URI identifier, Entity generated, Activity generater) {
+    public WasGeneratedBy (Object identifier, Entity generated, Activity generater) {
         super (identifier);
         _generater = generater;
         _generated = generated;
     }
 
-    public WasGeneratedBy (URI identifier, Entity generated, Activity generater, Date time) {
-        super (identifier, time);
+    public WasGeneratedBy (Object identifier, Entity generated, Activity generater, Date time) {
+        super (identifier);
         _generater = generater;
         _generated = generated;
+        setTime (time);
     }
     
     public Activity getGenerater () {
@@ -45,5 +45,11 @@ public class WasGeneratedBy extends TimestampedEdge {
     
     public void setGenerated (Entity generated) {
         _generated = generated;
+    }
+
+    public static WasGeneratedBy reference (Object identifier) {
+        WasGeneratedBy reference = new WasGeneratedBy (identifier, null, null);
+        reference.setIsReference (true);
+        return reference;
     }
 }

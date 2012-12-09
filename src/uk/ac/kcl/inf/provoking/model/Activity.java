@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model;
 
-import java.net.URI;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 
@@ -9,6 +8,7 @@ public class Activity extends AttributeHolder implements Description {
     private Date _endedAt;
     
     public Activity () {
+        this (null, null);
     }
 
     public Activity (Date startedAt, Date endedAt) {
@@ -16,12 +16,12 @@ public class Activity extends AttributeHolder implements Description {
         _endedAt = endedAt;
     }
     
-    public Activity (URI identifier, boolean isReference) {
-        super (identifier, isReference);
+    public Activity (Object identifier) {
+        this (identifier, null, null);
     }
 
-    public Activity (URI identifier, Date startedAt, Date endedAt) {
-        super (identifier, false);
+    public Activity (Object identifier, Date startedAt, Date endedAt) {
+        super (identifier);
         _startedAt = startedAt;
         _endedAt = endedAt;
     }
@@ -44,5 +44,11 @@ public class Activity extends AttributeHolder implements Description {
         if (endedAt != null) {
             _endedAt = endedAt;
         }
+    }
+    
+    public static Activity reference (Object identifier) {
+        Activity reference = new Activity (identifier);
+        reference.setIsReference (true);
+        return reference;
     }
 }

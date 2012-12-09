@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import java.net.URI;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.Description;
 
@@ -12,18 +11,9 @@ public abstract class TimestampedEdge extends AttributeHolder implements Descrip
         _timeGenerator = NO_TIMESTAMP;
     }
 
-    protected TimestampedEdge (Date time) {
-        _timeGenerator = new ValueGenerator<> (time);
-    }
-
-    protected TimestampedEdge (URI identifier) {
-        super (identifier, false);
+    protected TimestampedEdge (Object identifier) {
+        super (identifier);
         _timeGenerator = NO_TIMESTAMP;
-    }
-    
-    protected TimestampedEdge (URI identifier, Date time) {
-        super (identifier, false);
-        _timeGenerator = new ValueGenerator<> (time);
     }
 
     public Date getTime () {
