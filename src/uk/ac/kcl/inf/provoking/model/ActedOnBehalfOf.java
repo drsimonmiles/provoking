@@ -1,6 +1,8 @@
 package uk.ac.kcl.inf.provoking.model;
 
-public class ActedOnBehalfOf implements Description {
+import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
+
+public class ActedOnBehalfOf extends AttributeHolder implements Description {
     private Agent _acter;
     private Agent _onBehalfOf;
     private Activity _activity;
@@ -12,17 +14,20 @@ public class ActedOnBehalfOf implements Description {
     }
 
     public ActedOnBehalfOf (Agent acter, Agent onBehalfOf) {
+        this (acter, onBehalfOf, (Activity) null);
+    }
+    
+    public ActedOnBehalfOf (Object identifier, Agent acter, Agent onBehalfOf, Activity activity) {
+        super (identifier);
         _acter = acter;
         _onBehalfOf = onBehalfOf;
-        _activity = null;
+        _activity = activity;
     }
-    
-    public ActedOnBehalfOf () {
-        _acter = null;
-        _onBehalfOf = null;
-        _activity = null;
+
+    public ActedOnBehalfOf (Object identifier, Agent acter, Agent onBehalfOf) {
+        this (identifier, acter, onBehalfOf, null);
     }
-    
+
     public Agent getActer () {
         return _acter;
     }
@@ -46,4 +51,10 @@ public class ActedOnBehalfOf implements Description {
     public void setActivity (Activity activity) {
         _activity = activity;
     }    
+
+    public static ActedOnBehalfOf reference (Object identifier) {
+        ActedOnBehalfOf reference = new ActedOnBehalfOf (identifier, null, null);
+        reference.setIsReference (true);
+        return reference;
+    }
 }

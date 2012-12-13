@@ -8,7 +8,7 @@ public class WasDerivedFrom extends AttributeHolder implements Description {
     private Activity _deriver;
     private WasGeneratedBy _generation;
     private Used _usage;
-    
+
     public WasDerivedFrom (Entity derived, Entity derivedFrom, Activity deriver, WasGeneratedBy generation, Used usage) {
         _derived = derived;
         _derivedFrom = derivedFrom;

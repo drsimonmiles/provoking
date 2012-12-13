@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Term {
-    Account, Activity, activity, Agent, agent, actedOnBehalfOf, alternateOf, Association, endedAtTime, 
-    Entity, entity, hadOriginalSource, Location,
+    Account, Activity, activity, Agent, agent, actedOnBehalfOf, alternateOf, 
+    Association, Bundle, Collection, EmptyCollection, endedAtTime, 
+    Entity, entity, hadOriginalSource, label, Location, location,
     Note, Organization,
-    Person, Plan, qualifiedAssociation, qualifiedUsage, SoftwareAgent, startedAtTime, Usage,
+    Person, Plan, PrimarySource, qualifiedAssociation, qualifiedUsage, 
+    Revision, role, Quotation, 
+    SoftwareAgent, startedAtTime, type, Usage,
     wasAssociatedWith,
     wasAttributedTo,
     wasDerivedFrom,
-    wasGeneratedBy, wasInformedBy, wasStartedByActivity, used;
+    wasGeneratedBy, wasInformedBy, wasStartedByActivity, used, value;
     public final static String PROV_NS = "http://www.w3.org/ns/prov#";
 
     public URI uri () {

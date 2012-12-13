@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import uk.ac.kcl.inf.provoking.model.Attribute;
@@ -104,5 +105,9 @@ public class AttributeHolder extends Identified {
         checkAttributesAllowed ();
         
         _attributes.remove (attribute);
+    }
+    
+    public void subtype (URI type) {
+        addAttribute (Term.type, type);
     }
 }
