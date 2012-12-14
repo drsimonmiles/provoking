@@ -13,15 +13,15 @@ public class HadMember implements Description {
         return _collection;
     }
 
-    public void setCollection (Entity alternateA) {
-        _collection = alternateA;
+    public void setCollection (Entity collection) {
+        _collection = collection;
     }
 
     public Entity getMember () {
         return _member;
     }
 
-    public void setMember (Entity alternateB) {
-        _member = alternateB;
+    public void setMember (Entity member) {
+        _member = member;
     }
 }
