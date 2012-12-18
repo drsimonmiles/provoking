@@ -4,7 +4,7 @@ public class Person extends Agent {
     public Person () {
     }
 
-    protected Person (Object identifier) {
+    public Person (Object identifier) {
         super (identifier);
     }
 }

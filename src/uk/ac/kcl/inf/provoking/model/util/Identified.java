@@ -1,27 +1,21 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import java.net.URI;
-
 public class Identified {
-    private Generator<? extends URI> _identifier;
+    private Object _identifier;
     private boolean _isReference;
 
     public Identified () {
-        _identifier = UniqueIDGenerator.singleton;
+        _identifier = UniqueIDGenerator.defaultGenerator.generateID ();
         _isReference = false;
     }
 
     public Identified (Object identifier) {
-        _identifier = new ValueGenerator (identifier);
+        _identifier = identifier;
         _isReference = false;
     }
-
-    public Generator<? extends URI> getIdentifierGenerator () {
-        return _identifier;
-    }
     
-    public URI getIdentifier () {
-        return getIdentifier ();
+    public Object getIdentifier () {
+        return _identifier;
     }
 
     public boolean isReference () {
@@ -29,13 +23,9 @@ public class Identified {
     }
     
     public void setIdentifier (Object identifier) {
-        _identifier = new ValueGenerator (identifier);
+        _identifier = identifier;
     }
-
-    public void setIdentifierGenerator (Generator identifierGenerator) {
-        _identifier = identifierGenerator;
-    }
-    
+   
     public void setIsReference (boolean isReference) {
         _isReference = isReference;
     }

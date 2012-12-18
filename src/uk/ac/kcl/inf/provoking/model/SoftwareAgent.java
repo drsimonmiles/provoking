@@ -4,7 +4,7 @@ public class SoftwareAgent extends Agent {
     public SoftwareAgent () {
     }
 
-    protected SoftwareAgent (Object identifier) {
+    public SoftwareAgent (Object identifier) {
         super (identifier);
     }
 }

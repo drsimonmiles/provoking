@@ -6,7 +6,7 @@ public class Entity extends AttributeHolder implements Description {
     public Entity () {
     }
     
-    protected Entity (Object identifier) {
+    public Entity (Object identifier) {
         super (identifier);
     }
     

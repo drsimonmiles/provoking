@@ -6,7 +6,7 @@ public class Agent extends AttributeHolder implements Description {
     public Agent () {
     }
 
-    protected Agent (Object identifier) {
+    public Agent (Object identifier) {
         super (identifier);
     }
 

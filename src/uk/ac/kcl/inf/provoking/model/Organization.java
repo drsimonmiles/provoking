@@ -4,7 +4,7 @@ public class Organization extends Agent {
     public Organization () {
     }
 
-    protected Organization (Object identifier) {
+    public Organization (Object identifier) {
         super (identifier);
     }
 }

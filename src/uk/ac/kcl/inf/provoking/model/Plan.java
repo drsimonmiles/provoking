@@ -7,7 +7,7 @@ public class Plan extends Entity {
         subtype (Term.Plan.uri ());
     }
     
-    protected Plan (Object identifier) {
+    public Plan (Object identifier) {
         super (identifier);
         subtype (Term.Plan.uri ());
     }

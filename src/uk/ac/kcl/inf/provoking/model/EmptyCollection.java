@@ -7,7 +7,7 @@ public class EmptyCollection extends Collection {
         subtype (Term.EmptyCollection.uri ());
     }
     
-    protected EmptyCollection (Object identifier) {
+    public EmptyCollection (Object identifier) {
         super (identifier);
         subtype (Term.EmptyCollection.uri ());
     }

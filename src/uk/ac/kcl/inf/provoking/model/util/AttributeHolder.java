@@ -29,15 +29,6 @@ public class AttributeHolder extends Identified {
         addAttribute (new Attribute (key, value));
     }
 
-    public void addGeneratedAttribute (Object key, Generator generator) {
-        checkAttributesAllowed ();
-        
-        Attribute newAttribute = new Attribute (key);
-        
-        newAttribute.setValueGenerator (generator);
-        addAttribute (newAttribute);
-    }
-
     private void checkAttributesAllowed () {
         if (isReference ()) {
             throw new UnsupportedOperationException ("No attributes allowed on this type");

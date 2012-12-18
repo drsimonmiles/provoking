@@ -7,7 +7,7 @@ public class Collection extends Entity {
         subtype (Term.Collection.uri ());
     }
     
-    protected Collection (Object identifier) {
+    public Collection (Object identifier) {
         super (identifier);
         subtype (Term.Collection.uri ());
     }
