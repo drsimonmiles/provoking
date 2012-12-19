@@ -5,7 +5,7 @@ public class Identified {
     private boolean _isReference;
 
     public Identified () {
-        _identifier = UniqueIDGenerator.defaultGenerator.generateID ();
+        _identifier = null;
         _isReference = false;
     }
 
@@ -18,6 +18,10 @@ public class Identified {
         return _identifier;
     }
 
+    public boolean hasIdentifier () {
+        return _identifier != null;
+    }
+    
     public boolean isReference () {
         return _isReference;
     }

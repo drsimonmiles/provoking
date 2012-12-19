@@ -7,15 +7,6 @@ public class Activity extends AttributeHolder implements Description {
     private Date _startedAt;
     private Date _endedAt;
     
-    public Activity () {
-        this (null, null);
-    }
-
-    public Activity (Date startedAt, Date endedAt) {
-        _startedAt = startedAt;
-        _endedAt = endedAt;
-    }
-    
     public Activity (Object identifier) {
         this (identifier, null, null);
     }

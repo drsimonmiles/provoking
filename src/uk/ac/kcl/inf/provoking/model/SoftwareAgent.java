@@ -1,10 +1,10 @@
 package uk.ac.kcl.inf.provoking.model;
 
-public class SoftwareAgent extends Agent {
-    public SoftwareAgent () {
-    }
+import uk.ac.kcl.inf.provoking.model.util.Term;
 
+public class SoftwareAgent extends Agent {
     public SoftwareAgent (Object identifier) {
         super (identifier);
+        subtype (Term.SoftwareAgent.uri ());
     }
 }
