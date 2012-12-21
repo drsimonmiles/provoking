@@ -66,10 +66,15 @@ public class ProvBuilder {
         this (addToExisting, new UniqueIDGenerator (idPrefix));
     }
     
-    public ProvBuilder (String idPrefix) {
-        this (new UniqueIDGenerator (idPrefix));
+    public ProvBuilder (String idVocabulary) {
+        this (new UniqueIDGenerator (idVocabulary));
     }
         
+    public ProvBuilder (String prefix, String idVocabulary) {
+        this (idVocabulary);
+        setPrefix (prefix, idVocabulary);
+    }
+
     public ProvBuilder (Document addToExisting) {
         this (addToExisting, "");
     }
