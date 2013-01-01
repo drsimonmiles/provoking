@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.openrdf.model.Resource;
+/*import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -29,10 +29,10 @@ import uk.ac.kcl.inf.provoking.model.Agent;
 import uk.ac.kcl.inf.provoking.model.Description;
 import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.model.Term;
-import uk.ac.kcl.inf.provoking.model.Used;
+import uk.ac.kcl.inf.provoking.model.Used;*/
 
 public class Loader {
-    private Repository _store;
+/*    private Repository _store;
     private ValueFactory _values;
     private RepositoryConnection _connection;
     private Map<URI, Activity> _activities;
@@ -171,5 +171,5 @@ public class Loader {
 
     public static URI toOpenRDF (ValueFactory values, java.net.URI javaURI) {
         return values.createURI (javaURI.toString ());
-    }
+    }*/
 }

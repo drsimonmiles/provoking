@@ -88,18 +88,20 @@ public class ProvBuilder {
     }
 
     public ProvBuilder activity (Date started, Date ended, String... attributes) throws ProvBuildException {
-        return addActivity (new Activity (id ("Activity"), started, ended), true, attributes);
+        return addActivity (new Activity (id ("Activity", attributes), started, ended), true, attributes);
     }
 
     public ProvBuilder activity (String... attributes) throws ProvBuildException {
         Description bookmarked;
         
-        if (attributes.length == 1 && attributes[0].startsWith ("<")) {
-            bookmarked = _bookmarks.get (attributes[0].substring (1));
-            if (bookmarked == null || !(bookmarked instanceof Activity)) {
-                throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is undefined or not an activity.");
+        if (attributes.length == 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Activity)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an activity.");
+                }
+                return addActivity ((Activity) bookmarked, false);
             }
-            return addActivity ((Activity) bookmarked, false);
         }
         return activity ((Date) null, (Date) null, attributes);
     }
@@ -152,6 +154,33 @@ public class ProvBuilder {
         return this;
     }
 
+    private void addAttributes (AttributeHolder addTo, String... attributes) throws ProvBuildException {
+        int equals;
+        String bookmark, keyText, valueText;
+        Object key, value;
+
+        for (String attribute : attributes) {
+            equals = attribute.indexOf ('=');
+            if (equals < 0) {
+                bookmark = attribute;
+                _bookmarks.put (bookmark, (Description) addTo);
+                if (_bookmarksAsLabels) {
+                    addTo.addAttribute (Term.label.uri (), bookmark);
+                }
+                continue;
+            }
+            valueText = attribute.substring (equals + 1).trim ();
+            value = resolve (valueText);
+            keyText = attribute.substring (0, equals).trim ();
+            if (keyText.trim ().equals ("")) {
+                id (value);
+            } else {
+                key = resolve (keyText);
+                addTo.addAttribute (key, value);
+            }
+        }
+    }
+
     private ProvBuilder addEntity (Entity entity, boolean isNew, String... attributes) throws ProvBuildException {
         store (entity, isNew, attributes);
         if (_prior != null) {
@@ -183,36 +212,6 @@ public class ProvBuilder {
         return this;
     }
 
-    private void addAttributes (AttributeHolder addTo, String... attributes) throws ProvBuildException {
-        int equals;
-        String bookmark, keyText, valueText;
-        Object key, value;
-
-        for (String attribute : attributes) {
-            if (attribute.startsWith ("*")) {
-                bookmark = attribute.substring (1).trim ();
-                _bookmarks.put (bookmark, (Description) addTo);
-                if (_bookmarksAsLabels) {
-                    addTo.addAttribute (Term.label.uri (), bookmark);
-                }
-                continue;
-            }
-            equals = attribute.indexOf ('=');
-            if (equals < 0) {
-                throw new ProvBuildException ("Attributes must have the format X=Y, but this attribute does not: " + attribute);
-            }
-            valueText = attribute.substring (equals + 1).trim ();
-            value = resolve (valueText);
-            keyText = attribute.substring (0, equals).trim ();
-            if (keyText.trim ().equals ("")) {
-                id (value);
-            } else {
-                key = resolve (keyText);
-                addTo.addAttribute (key, value);
-            }
-        }
-    }
-
     public ProvBuilder addResolver (AbbreviationResolver resolver) {
         _resolvers.add (resolver);
         return this;
@@ -221,14 +220,16 @@ public class ProvBuilder {
     public ProvBuilder agent (String... attributes) {
         Description bookmarked;
         
-        if (attributes.length == 1 && attributes[0].startsWith ("<")) {
-            bookmarked = _bookmarks.get (attributes[0].substring (1));
-            if (bookmarked == null || !(bookmarked instanceof Agent)) {
-                throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is undefined or not an agent.");
+        if (attributes.length == 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Agent)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an agent.");
+                }
+                return addAgent ((Agent) bookmarked, false);
             }
-            return addAgent ((Agent) bookmarked, false);
         }
-        return addAgent (new Agent (id ("Agent")), true, attributes);
+        return addAgent (new Agent (id ("Agent", attributes)), true, attributes);
     }
 
     public ProvBuilder agentRef (Object identifier) {
@@ -264,14 +265,16 @@ public class ProvBuilder {
     public ProvBuilder entity (String... attributes) {
         Description bookmarked;
         
-        if (attributes.length == 1 && attributes[0].startsWith ("<")) {
-            bookmarked = _bookmarks.get (attributes[0].substring (1));
-            if (bookmarked == null || !(bookmarked instanceof Entity)) {
-                throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is undefined or not an entity.");
+        if (attributes.length == 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Entity)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an entity.");
+                }
+                return addEntity ((Entity) bookmarked, false);
             }
-            return addEntity ((Entity) bookmarked, false);
         }
-        return addEntity (new Entity (id ("Entity")), true, attributes);
+        return addEntity (new Entity (id ("Entity", attributes)), true, attributes);
     }
 
     private Activity getActivity (String edgeType) throws ProvBuildException {
@@ -303,7 +306,12 @@ public class ProvBuilder {
         return store (new HadPrimarySource (id ("HadPrimarySource"), getEntity ("hadPrimarySource"), null), true);
     }
     
-    private Object id (String descriptive) {
+    private Object id (String descriptive, String... attributes) {
+        for (String attribute : attributes) {
+            if (attribute.indexOf ('=') < 0) {
+                return _idgen.generateID (attribute);
+            }
+        }
         return _idgen.generateID (descriptive);
     }
 
