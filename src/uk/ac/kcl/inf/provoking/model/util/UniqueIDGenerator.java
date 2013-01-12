@@ -18,7 +18,11 @@ public class UniqueIDGenerator implements IDGenerator {
     @Override
     public String generateID (String descriptive) {
         _counter += 1;
-        return _start + descriptive + _origination + "-" + _counter;
+        return _start + descriptive + "-" + _origination + "-" + _counter;
+    }
+    
+    public String getStart () {
+        return _start;
     }
 
     public void setPrefix (String prefix) {

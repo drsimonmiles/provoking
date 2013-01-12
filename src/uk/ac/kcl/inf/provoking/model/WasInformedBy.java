@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
+import uk.ac.kcl.inf.provoking.model.util.Term;
 
 public class WasInformedBy extends AttributeHolder implements Description {
     private Activity _informed;
@@ -37,5 +38,11 @@ public class WasInformedBy extends AttributeHolder implements Description {
         WasInformedBy reference = new WasInformedBy (identifier, null, null);
         reference.setIsReference (true);
         return reference;
+    }
+
+    private static Term[] CLASS_TERMS = terms (Term.Communication);
+    @Override
+    public Term[] getClassTerms () {
+        return CLASS_TERMS;
     }
 }

@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
+import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
 public class WasStartedBy extends TimestampedEdge implements Description {
@@ -96,5 +97,11 @@ public class WasStartedBy extends TimestampedEdge implements Description {
         WasStartedBy reference = new WasStartedBy (identifier, null, null, (Activity) null);
         reference.setIsReference (true);
         return reference;
+    }
+
+    private static Term[] CLASS_TERMS = terms (Term.Start);
+    @Override
+    public Term[] getClassTerms () {
+        return CLASS_TERMS;
     }
 }

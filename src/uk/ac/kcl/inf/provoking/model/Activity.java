@@ -2,8 +2,10 @@ package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
+import uk.ac.kcl.inf.provoking.model.util.Term;
 
 public class Activity extends AttributeHolder implements Description {
+    private static Term[] CLASS_TERMS = terms (Term.Activity);
     private Date _startedAt;
     private Date _endedAt;
     
@@ -41,5 +43,10 @@ public class Activity extends AttributeHolder implements Description {
         Activity reference = new Activity (identifier);
         reference.setIsReference (true);
         return reference;
+    }
+
+    @Override
+    public Term[] getClassTerms () {
+        return CLASS_TERMS;
     }
 }

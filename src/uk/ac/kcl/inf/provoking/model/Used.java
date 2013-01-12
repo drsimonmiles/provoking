@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
+import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
 public class Used extends TimestampedEdge {
@@ -51,5 +52,11 @@ public class Used extends TimestampedEdge {
         Used reference = new Used (identifier, null, null);
         reference.setIsReference (true);
         return reference;
+    }
+
+    private static Term[] CLASS_TERMS = terms (Term.Usage);
+    @Override
+    public Term[] getClassTerms () {
+        return CLASS_TERMS;
     }
 }

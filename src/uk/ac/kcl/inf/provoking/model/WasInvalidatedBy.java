@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
+import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
 public class WasInvalidatedBy extends TimestampedEdge {
@@ -67,5 +68,11 @@ public class WasInvalidatedBy extends TimestampedEdge {
         WasInvalidatedBy reference = new WasInvalidatedBy (identifier, null, (Activity) null);
         reference.setIsReference (true);
         return reference;
+    }
+
+    private static Term[] CLASS_TERMS = terms (Term.Invalidation);
+    @Override
+    public Term[] getClassTerms () {
+        return CLASS_TERMS;
     }
 }

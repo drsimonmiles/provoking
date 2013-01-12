@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import uk.ac.kcl.inf.provoking.model.Attribute;
 
-public class AttributeHolder extends Identified {
+public abstract class AttributeHolder extends Identified {
     private final Set<Attribute> _attributes;
 
     protected AttributeHolder () {
@@ -78,6 +78,10 @@ public class AttributeHolder extends Identified {
         return found;
     }
     
+    public boolean hasAttributes () {
+        return !_attributes.isEmpty ();
+    }
+    
     public void removeAttributes (Object key) {
         checkAttributesAllowed ();
         
@@ -97,7 +101,7 @@ public class AttributeHolder extends Identified {
         _attributes.remove (attribute);
     }
     
-    public void subtype (String type) {
-        addAttribute (Term.type, type);
+    public void subtype (Term type) {
+        addAttribute (Term.type.uri (), type.uri ());
     }
 }

@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
+import uk.ac.kcl.inf.provoking.model.util.Term;
 
 public class WasAttributedTo extends AttributeHolder implements Description {
     private Agent _attributedTo;
@@ -37,5 +38,11 @@ public class WasAttributedTo extends AttributeHolder implements Description {
         WasAttributedTo reference = new WasAttributedTo (identifier, null, null);
         reference.setIsReference (true);
         return reference;
+    }
+
+    private static Term[] CLASS_TERMS = terms (Term.Attribution);
+    @Override
+    public Term[] getClassTerms () {
+        return CLASS_TERMS;
     }
 }

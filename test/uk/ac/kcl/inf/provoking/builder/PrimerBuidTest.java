@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf.provoking.builder;
 
+import java.net.URI;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -7,8 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.model.Document;
-import uk.ac.kcl.inf.provoking.model.rdf.RDFSerialiser;
-import uk.ac.kcl.inf.provoking.model.rdf.TriplesListener;
+import uk.ac.kcl.inf.provoking.serialise.rdf.RDFSerialiser;
+import uk.ac.kcl.inf.provoking.serialise.rdf.TriplesListener;
 
 public class PrimerBuidTest {
     public PrimerBuidTest () {
@@ -48,12 +49,44 @@ public class PrimerBuidTest {
         b.activity ("compose").used ().entity ("regionList");
         b.entity ("chart1").wasGeneratedBy ().activity ("illustrate").used ().entity ("composition");
         
+        b.activity ("compose").wasAssociatedWith ().person ("derek", "foaf:givenName=Derek", "foaf:mbox=mailto:derek@example.org");
+        
+        b.entity ("blogEntry").wasQuotedFrom ().entity ("article");
+        b.entity ("articleV1").specializationOf ().entity ("article");
+        b.entity ("articleV2").specializationOf ().entity ("article");
+        b.entity ("articleV2").alternateOf ().entity ("articleV1");
+        
         document = b.build ();
         
         new RDFSerialiser (new TriplesListener () {
             @Override
-            public void triple (String subject, String predicate, String object) {
-                System.out.println (subject + " " + predicate + " " + object);
+            public void triple (URI subject, URI predicate, URI object) {
+                System.out.println ("<" + subject + "> <" + predicate + "> <" + object + ">");
+            }
+
+            @Override
+            public void triple (URI subject, URI predicate, Object objectValue, String objectType) {
+                System.out.println ("<" + subject + "> <" + predicate + "> \"" + objectValue + "\"");
+            }
+
+            @Override
+            public void triple (String blankSubject, URI predicate, URI object) {
+                System.out.println (blankSubject + " <" + predicate + "> <" + object + ">");
+            }
+
+            @Override
+            public void triple (String blankSubject, URI predicate, Object objectValue, String objectType) {
+                System.out.println (blankSubject + " <" + predicate + "> \"" + objectValue + "\"");
+            }
+
+            @Override
+            public void triple (URI subject, URI predicate, String blankObject) {
+                System.out.println ("<" + subject + "> <" + predicate + "> " + blankObject);
+            }
+
+            @Override
+            public void triple (String blankSubject, URI predicate, String blankObject) {
+                System.out.println (blankSubject + " <" + predicate + "> " + blankObject);
             }
         }).serialise (document);
     }

@@ -1,6 +1,8 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-public class Identified {
+import uk.ac.kcl.inf.provoking.model.Description;
+
+public abstract class Identified implements Description {
     private Object _identifier;
     private boolean _isReference;
 
@@ -13,6 +15,8 @@ public class Identified {
         _identifier = identifier;
         _isReference = false;
     }
+
+    public abstract Term[] getClassTerms ();
     
     public Object getIdentifier () {
         return _identifier;
@@ -32,5 +36,9 @@ public class Identified {
    
     public void setIsReference (boolean isReference) {
         _isReference = isReference;
+    }
+    
+    protected static Term[] terms (Term... terms) {
+        return terms;
     }
 }
