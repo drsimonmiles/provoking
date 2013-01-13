@@ -9,12 +9,15 @@ import java.util.List;
 import java.util.Map;
 import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
 import uk.ac.kcl.inf.provoking.model.Activity;
+import uk.ac.kcl.inf.provoking.model.Agent;
 import uk.ac.kcl.inf.provoking.model.AlternateOf;
 import uk.ac.kcl.inf.provoking.model.Attribute;
 import uk.ac.kcl.inf.provoking.model.Description;
 import uk.ac.kcl.inf.provoking.model.Document;
+import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.model.HadMember;
 import uk.ac.kcl.inf.provoking.model.HadPrimarySource;
+import uk.ac.kcl.inf.provoking.model.InstantaneousEvent;
 import uk.ac.kcl.inf.provoking.model.SpecializationOf;
 import uk.ac.kcl.inf.provoking.model.Used;
 import uk.ac.kcl.inf.provoking.model.WasAssociatedWith;
@@ -30,7 +33,6 @@ import uk.ac.kcl.inf.provoking.model.WasStartedBy;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Identified;
 import uk.ac.kcl.inf.provoking.model.util.Term;
-import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 
 public class RDFSerialiser {
@@ -98,14 +100,25 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Returns true if the given description can be expressed by a binary, rather than qualified, relation
+     */
     private boolean isMinimal (Description description, Document document, Object... optionalArguments) {
         for (Attribute attribute : ((AttributeHolder) description).getAttributes ()) {
             if (!attribute.getKey ().equals (Term.type.uri ())) {
                 return false;
             }
         }
-        if (description instanceof TimestampedEdge && ((TimestampedEdge) description).getTime () != null) {
-            return false;
+        if (description instanceof InstantaneousEvent) {
+            if (((InstantaneousEvent) description).getTime () != null) {
+                return false;
+            }
+            if (((InstantaneousEvent) description).getRole () != null) {
+                return false;
+            }
+            if (((InstantaneousEvent) description).getLocation () != null) {
+                return false;
+            }
         }
         for (Object argument : optionalArguments) {
             if (argument != null) {
@@ -146,10 +159,17 @@ public class RDFSerialiser {
             serialise (((HadMember) description).getCollection (), Term.hadMember, ((HadMember) description).getMember ());
             return;
         }
-        // Activities may have start and end times
+        // Activities, agents and entities may have times and/or locations
         if (description instanceof Activity) {
             serialiseLiteral (description, Term.startedAtTime, ((Activity) description).getStartedAt ());
-            serialiseLiteral (description, Term.startedAtTime, ((Activity) description).getEndedAt ());
+            serialiseLiteral (description, Term.endedAtTime, ((Activity) description).getEndedAt ());
+            serialise (description, Term.atLocation, ((Activity) description).getLocation ());
+        }
+        if (description instanceof Entity) {
+            serialise (description, Term.atLocation, ((Entity) description).getLocation ());
+        }
+        if (description instanceof Agent) {
+            serialise (description, Term.atLocation, ((Agent) description).getLocation ());
         }
         // Relations that are subtypes of other relations
         if (description instanceof HadPrimarySource) {
@@ -253,9 +273,11 @@ public class RDFSerialiser {
             serialise (description, Term.entity, ((WasStartedBy) description).getTrigger ());
             serialise (description, Term.activity, ((WasStartedBy) description).getStarter ());
         }
-        // Record event timestamps
-        if (description instanceof TimestampedEdge) {
-            serialiseLiteral (description, Term.atTime, ((TimestampedEdge) description).getTime ());
+        // Record event timestamps, roles and locations
+        if (description instanceof InstantaneousEvent) {
+            serialiseLiteral (description, Term.atTime, ((InstantaneousEvent) description).getTime ());
+            serialise (description, Term.atLocation, ((InstantaneousEvent) description).getLocation ());
+            serialise (description, Term.hadRole, ((InstantaneousEvent) description).getRole ());
         }
         // Record type information
         if (description instanceof Identified) {

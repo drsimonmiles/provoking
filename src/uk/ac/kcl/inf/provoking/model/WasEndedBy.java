@@ -2,9 +2,8 @@ package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.Term;
-import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
-public class WasEndedBy extends TimestampedEdge implements Description {
+public class WasEndedBy extends InstantaneousEvent implements Description {
     private Activity _ended;
     private Activity _ender;
     private Entity _trigger;

@@ -47,17 +47,22 @@ public class PrimerBuidTest {
         
         b.entity ("article", "dcterms:title=Crime rises in cities");
 
-        b.entity ("composition").wasGeneratedBy ("prov:hadRole=ex:composedData").activity ("compose");
-        b.activity ("compose").used ("prov:hadRole=ex:dataToCompose").entity ("dataSet1");
-        b.activity ("compose").used ("prov:hadRole=ex:regionsToAggregateBy").entity ("regionList");
+        b.entity ("composition").wasGeneratedBy ("compositionGeneration").activity ("compose");
+        b.activity ("compose").used ("composeUsedDataSet1").entity ("dataSet1");
+        b.activity ("compose").used ("composeUsedRegionList").entity ("regionList");
         b.entity ("chart1").wasGeneratedBy ().activity ("illustrate").used ().entity ("composition");
 
-        b.activity ("compose").wasAssociatedWith ("prov:hadRole=ex:analyst").
+        b.activity ("compose").wasAssociatedWith ("composeByDerek").
                 person ("derek", "foaf:givenName=Derek", "foaf:mbox=mailto:derek@example.org");
         b.activity ("illustrate").wasAssociatedWith ().person ("derek");
         b.person ("derek").actedOnBehalfOf ().organization ("chartgen", "foaf:name=Chart Generators Inc");
         b.entity ("chart1").wasAttributedTo ().person ("derek");
- 
+
+        b.where ("compositionGeneration").role ("ex:composedData");
+        b.where ("composeUsedDataSet1").role ("ex:dataToCompose");
+        b.where ("composeUsedRegionList").role ("ex:regionsToAggregateBy");
+        b.where ("composeByDerek").role ("ex:analyst");
+        
         b.entity ("dataSet2").wasRevisionOf ().entity ("dataSet1");
         b.entity ("chart2").wasDerivedFrom ().entity ("dataSet2");
         b.entity ("chart2").wasRevisionOf ().entity ("chart1");

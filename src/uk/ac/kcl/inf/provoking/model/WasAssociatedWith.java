@@ -7,11 +7,13 @@ public class WasAssociatedWith extends AttributeHolder implements Description {
     private Agent _responsible;
     private Activity _responsibleFor;
     private Entity _plan;
+    private Role _role;
     
     public WasAssociatedWith (Activity responsibleFor, Agent responsible, Entity plan) {
         _responsible = responsible;
         _responsibleFor = responsibleFor;
         _plan = plan;
+        _role = null;
     }
 
     public WasAssociatedWith (Activity responsibleFor, Agent responsible) {
@@ -23,6 +25,7 @@ public class WasAssociatedWith extends AttributeHolder implements Description {
         _responsible = responsible;
         _responsibleFor = responsibleFor;
         _plan = plan;
+        _role = null;
     }
 
     public WasAssociatedWith (Object identifier, Activity responsibleFor, Agent responsible) {
@@ -51,6 +54,14 @@ public class WasAssociatedWith extends AttributeHolder implements Description {
 
     public void setPlan (Entity plan) {
         _plan = plan;
+    }
+    
+    public Role getRole () {
+        return _role;
+    }
+    
+    public void setRole (Role role) {
+        _role = role;
     }
     
     public static WasAssociatedWith reference (Object identifier) {

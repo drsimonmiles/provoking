@@ -18,9 +18,12 @@ import uk.ac.kcl.inf.provoking.model.EmptyCollection;
 import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.model.HadMember;
 import uk.ac.kcl.inf.provoking.model.HadPrimarySource;
+import uk.ac.kcl.inf.provoking.model.InstantaneousEvent;
+import uk.ac.kcl.inf.provoking.model.Location;
 import uk.ac.kcl.inf.provoking.model.Organization;
 import uk.ac.kcl.inf.provoking.model.Person;
 import uk.ac.kcl.inf.provoking.model.Plan;
+import uk.ac.kcl.inf.provoking.model.Role;
 import uk.ac.kcl.inf.provoking.model.SoftwareAgent;
 import uk.ac.kcl.inf.provoking.model.SpecializationOf;
 import uk.ac.kcl.inf.provoking.model.Used;
@@ -107,7 +110,7 @@ public class ProvBuilder {
                 if (!(bookmarked instanceof Activity)) {
                     throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an activity.");
                 }
-                return addActivity ((Activity) bookmarked, false);
+                return addActivity ((Activity) bookmarked, false, attributes);
             }
         }
         return activity ((Date) null, (Date) null, attributes);
@@ -220,8 +223,40 @@ public class ProvBuilder {
         return this;
     }
 
+    private ProvBuilder addLocation (Location location, boolean isNew, String... attributes) throws ProvBuildException {
+        store (location, isNew, attributes);
+        if (_prior != null) {
+            if (_prior instanceof Activity) {
+                ((Activity) _prior).setLocation (location);
+            }
+            if (_prior instanceof Agent) {
+                ((Agent) _prior).setLocation (location);
+            }
+            if (_prior instanceof Entity) {
+                ((Entity) _prior).setLocation (location);
+            }
+            if (_prior instanceof InstantaneousEvent) {
+                ((InstantaneousEvent) _prior).setLocation (location);
+            }
+        }
+        return this;
+    }
+
     public ProvBuilder addResolver (AbbreviationResolver resolver) {
         _resolvers.add (resolver);
+        return this;
+    }
+
+    private ProvBuilder addRole (Role role, boolean isNew, String... attributes) throws ProvBuildException {
+        store (role, isNew, attributes);
+        if (_prior != null) {
+            if (_prior instanceof InstantaneousEvent) {
+                ((InstantaneousEvent) _prior).setRole (role);
+            }
+            if (_prior instanceof WasAssociatedWith) {
+                ((WasAssociatedWith) _prior).setRole (role);
+            }
+        }
         return this;
     }
 
@@ -234,7 +269,7 @@ public class ProvBuilder {
                 if (!(bookmarked instanceof Agent)) {
                     throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an agent.");
                 }
-                return addAgent ((Agent) bookmarked, false);
+                return addAgent ((Agent) bookmarked, false, attributes);
             }
         }
         return addAgent (new Agent (idgen ("Agent", attributes)), true, attributes);
@@ -279,7 +314,7 @@ public class ProvBuilder {
                 if (!(bookmarked instanceof Entity)) {
                     throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an entity.");
                 }
-                return addEntity ((Entity) bookmarked, false);
+                return addEntity ((Entity) bookmarked, false, attributes);
             }
         }
         return addEntity (new Entity (idgen ("Entity", attributes)), true, attributes);
@@ -332,6 +367,23 @@ public class ProvBuilder {
         return this;
     }
 
+    public ProvBuilder location (String id, String... attributes) {
+        Description bookmarked;
+        Location newLocation;
+
+        bookmarked = _bookmarks.get (id);
+        if (bookmarked != null) {
+            if (!(bookmarked instanceof Role)) {
+                throw new ProvBuildException ("Reference " + id + " is not a role.");
+            }
+            return addLocation ((Location) bookmarked, false, attributes);
+        }
+        newLocation = new Location (resolve (id));
+        _bookmarks.put (id, newLocation);
+        
+        return addLocation (newLocation, true, attributes);
+    }
+
     public ProvBuilder organization (String... attributes) {
         return addAgent (new Organization (idgen ("Organization", attributes)), true, attributes);
     }
@@ -355,6 +407,23 @@ public class ProvBuilder {
             }
         }
         return text;
+    }
+
+    public ProvBuilder role (String id, String... attributes) {
+        Description bookmarked;
+        Role newRole;
+
+        bookmarked = _bookmarks.get (id);
+        if (bookmarked != null) {
+            if (!(bookmarked instanceof Role)) {
+                throw new ProvBuildException ("Reference " + id + " is not a role.");
+            }
+            return addRole ((Role) bookmarked, false, attributes);
+        }
+        newRole = new Role (resolve (id));
+        _bookmarks.put (id, newRole);
+
+        return addRole (newRole, true, attributes);
     }
 
     public ProvBuilder setBookmarksAsLabels (boolean bookmarksAsLabels) {

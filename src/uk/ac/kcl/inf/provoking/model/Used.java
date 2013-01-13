@@ -2,9 +2,8 @@ package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.Term;
-import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
-public class Used extends TimestampedEdge {
+public class Used extends InstantaneousEvent {
     private Activity _user;
     private Entity _used;
     
@@ -14,9 +13,9 @@ public class Used extends TimestampedEdge {
     }
 
     public Used (Activity user, Entity used, Date time) {
-        super (time);
         _user = user;
         _used = used;
+        setTime (time);
     }
 
     public Used (Object identifier, Activity user, Entity used) {

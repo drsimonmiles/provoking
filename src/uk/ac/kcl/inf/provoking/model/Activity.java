@@ -8,17 +8,34 @@ public class Activity extends AttributeHolder implements Description {
     private static Term[] CLASS_TERMS = terms (Term.Activity);
     private Date _startedAt;
     private Date _endedAt;
+    private Location _location;
     
     public Activity (Object identifier) {
         this (identifier, null, null);
     }
 
-    public Activity (Object identifier, Date startedAt, Date endedAt) {
+    public Activity (Object identifier, Date startedAt, Date endedAt, Location location) {
         super (identifier);
         _startedAt = startedAt;
         _endedAt = endedAt;
     }
+
+    public Activity (Object identifier, Date startedAt, Date endedAt) {
+        this (identifier, startedAt, endedAt, null);
+    }
+
+    public Activity (Object identifier, Location location) {
+        this (identifier, null, null, location);
+    }
     
+    public Location getLocation () {
+        return _location;
+    }
+    
+    public void setLocation (Location location) {
+        _location = location;
+    }
+
     public Date getStartedAt () {
         return _startedAt;
     }

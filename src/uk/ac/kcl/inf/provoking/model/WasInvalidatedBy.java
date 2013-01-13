@@ -2,9 +2,8 @@ package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.Term;
-import uk.ac.kcl.inf.provoking.model.util.TimestampedEdge;
 
-public class WasInvalidatedBy extends TimestampedEdge {
+public class WasInvalidatedBy extends InstantaneousEvent {
     private Activity _invalidater;
     private Entity _invalidated;
     
