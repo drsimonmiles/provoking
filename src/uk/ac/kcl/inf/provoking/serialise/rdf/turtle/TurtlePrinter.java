@@ -28,7 +28,7 @@ public class TurtlePrinter {
     }
 
     public void serialise (Document document) {
-        boolean header = false;
+        boolean xsd = false;
 
         _prefixes.clear ();
         for (SerialisationHint hint : document.getSerialisationHints ()) {
@@ -39,12 +39,15 @@ public class TurtlePrinter {
                 _output.print (hint.arguments[1].toString ());
                 _output.println ("> .");
                 _prefixes.put (hint.arguments[1].toString (), hint.arguments[0].toString ());
-                header = true;
+                if (hint.arguments[0].toString ().equals ("xsd")) {
+                    xsd = true;
+                }
             }
         }
-        if (header) {
-            _output.println ();
+        if (!xsd) {
+            _output.println ("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .");
         }
+        _output.println ();
         _serialiser.serialise (document);
     }
 

@@ -83,7 +83,7 @@ public class ProvConstructer {
     }
 
     public static Description create (URI type, Object identifier) {
-        return create (Term.toTerm (type), null);
+        return create (Term.toTerm (type), identifier);
     }
 
     public static Description create (URI type) {

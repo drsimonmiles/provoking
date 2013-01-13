@@ -28,7 +28,7 @@ public enum Term {
     }
     
     public static Term toTerm (URI fullName) {
-        return valueOf (type.toString ().substring (PROV_NS.length ()));
+        return valueOf (fullName.toString ().substring (PROV_NS.length ()));
     }
     
     public URI uri () {

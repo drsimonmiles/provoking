@@ -1,7 +1,8 @@
 package uk.ac.kcl.inf.provoking.builder;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -9,8 +10,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.model.Document;
-import uk.ac.kcl.inf.provoking.serialise.rdf.RDFSerialiser;
-import uk.ac.kcl.inf.provoking.serialise.rdf.TriplesListener;
+import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
+import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
+import uk.ac.kcl.inf.provoking.serialise.rdf.RDFDeserialiser;
+import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
 import uk.ac.kcl.inf.provoking.serialise.rdf.turtle.TurtlePrinter;
 
 public class PrimerBuidTest {
@@ -38,9 +41,12 @@ public class PrimerBuidTest {
     // @Test
     // public void hello() {}
     @Test
-    public void buildPrimer () {
+    public void buildPrimer () throws IOException, DeserialisationException {
         ProvBuilder b = new ProvBuilder ("ex:", "http://www.inf.kcl.ac.uk/staff/simonm/provoking#");
+        String file1 = "test.ttl", file2 = "test2.ttl";
+        JenaDeserialiser in = new JenaDeserialiser ();
         Document document;
+        PrintWriter out;
         
         b.setPrefix ("dcterms:", "http://purl.org/dc/terms/");
         b.setPrefix ("foaf:", "http://xmlns.com/foaf/0.1/");
@@ -81,38 +87,16 @@ public class PrimerBuidTest {
         b.entity ("articleV2").alternateOf ().entity ("articleV1");
         
         document = b.build ();
+
+        out = new PrintWriter (new FileWriter (file1));
+        new TurtlePrinter (out).serialise (document);
+        out.close ();
         
-        new TurtlePrinter (new PrintWriter (System.out, true)).serialise (document);
-        /*new RDFSerialiser (new TriplesListener () {
-            @Override
-            public void triple (URI subject, URI predicate, URI object) {
-                System.out.println ("<" + subject + "> <" + predicate + "> <" + object + ">");
-            }
+        in.read (file1, null, Language.turtle);
+        document = in.build ();
 
-            @Override
-            public void triple (URI subject, URI predicate, Object objectValue, String objectType) {
-                System.out.println ("<" + subject + "> <" + predicate + "> \"" + objectValue + "\"");
-            }
-
-            @Override
-            public void triple (String blankSubject, URI predicate, URI object) {
-                System.out.println (blankSubject + " <" + predicate + "> <" + object + ">");
-            }
-
-            @Override
-            public void triple (String blankSubject, URI predicate, Object objectValue, String objectType) {
-                System.out.println (blankSubject + " <" + predicate + "> \"" + objectValue + "\"");
-            }
-
-            @Override
-            public void triple (URI subject, URI predicate, String blankObject) {
-                System.out.println ("<" + subject + "> <" + predicate + "> " + blankObject);
-            }
-
-            @Override
-            public void triple (String blankSubject, URI predicate, String blankObject) {
-                System.out.println (blankSubject + " <" + predicate + "> " + blankObject);
-            }
-        }).serialise (document);*/
+        out = new PrintWriter (new FileWriter (file2));
+        new TurtlePrinter (out).serialise (document);
+        out.close ();
     }
 }

@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 import uk.ac.kcl.inf.provoking.model.*;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
+import uk.ac.kcl.inf.provoking.model.util.Identified;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
 
 public class RDFDeserialiser implements TriplesListener {
     private Map<Object, SingleDescriptionTriples> _buffered;
 
-    public RDFDeserialiser (Document addTo) {
+    public RDFDeserialiser () {
         _buffered = new HashMap<> ();
     }
 

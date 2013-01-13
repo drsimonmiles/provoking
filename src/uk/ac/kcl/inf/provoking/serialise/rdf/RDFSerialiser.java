@@ -49,7 +49,7 @@ public class RDFSerialiser {
 
         if (blank == null) {
             _lastBlank += 1;
-            blank = "_" + _lastBlank;
+            blank = "_:b" + _lastBlank;
             _blankIDs.put (description, blank);
         }
 

@@ -18,7 +18,6 @@ import uk.ac.kcl.inf.provoking.model.EmptyCollection;
 import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.model.HadMember;
 import uk.ac.kcl.inf.provoking.model.HadPrimarySource;
-import uk.ac.kcl.inf.provoking.model.InstantaneousEvent;
 import uk.ac.kcl.inf.provoking.model.Location;
 import uk.ac.kcl.inf.provoking.model.Organization;
 import uk.ac.kcl.inf.provoking.model.Person;
