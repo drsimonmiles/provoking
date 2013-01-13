@@ -16,13 +16,21 @@ public enum Term {
     qualifiedDelegation, qualifiedDerivation, qualifiedEnd, qualifiedGeneration,
     qualifiedInvalidation, qualifiedPrimarySource, qualifiedRevision, qualifiedQuotation, qualifiedStart, qualifiedUsage,
     Revision, Role, role, Quotation, 
-    SoftwareAgent, specializationOf, Start, startedAtTime, type, Usage,
+    SoftwareAgent, specializationOf, Start, startedAtTime, type, Usage, used, value,
     wasAssociatedWith,
     wasAttributedTo,
     wasDerivedFrom, wasEndedBy,
-    wasGeneratedBy, wasInformedBy, wasInvalidatedBy, wasRevisionOf, wasQuotedFrom, wasStartedBy, used, value;
+    wasGeneratedBy, wasInformedBy, wasInvalidatedBy, wasRevisionOf, wasQuotedFrom, wasStartedBy;
     public final static String PROV_NS = "http://www.w3.org/ns/prov#";
 
+    public static boolean isProvTerm (URI uri) {
+        return uri.toString ().startsWith (PROV_NS);
+    }
+    
+    public static Term toTerm (URI fullName) {
+        return valueOf (type.toString ().substring (PROV_NS.length ()));
+    }
+    
     public URI uri () {
         return getURISet ().uri (this);
     }

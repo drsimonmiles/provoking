@@ -10,6 +10,7 @@ import javax.xml.bind.DatatypeConverter;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHintType;
+import uk.ac.kcl.inf.provoking.serialise.rdf.Literal;
 import uk.ac.kcl.inf.provoking.serialise.rdf.RDFSerialiser;
 import uk.ac.kcl.inf.provoking.serialise.rdf.TriplesListener;
 
@@ -23,7 +24,7 @@ public class TurtlePrinter {
         _output = output;
         _listener = new TurtlePrinterTriplesListener ();
         _serialiser = new RDFSerialiser (_listener);
-        _prefixes = new HashMap <> ();
+        _prefixes = new HashMap<> ();
     }
 
     public void serialise (Document document) {
@@ -53,30 +54,29 @@ public class TurtlePrinter {
             _output.print (" ");
         }
 
-        public void literal (Object value, String type) {
+        public void literal (Literal object) {
+            Object value = object._value;
             Calendar dateTime;
 
-            switch (type) {
-                case "String":
-                    _output.print ("\"");
-                    _output.print (value);
-                    _output.print ("\"");
-                    _output.print ("^^xsd:string");
-                    break;
-                case "Date":
-                    dateTime = Calendar.getInstance ();
-                    dateTime.setTime ((Date) value);
-                    _output.print ("\"");
-                    _output.print (DatatypeConverter.printDateTime (dateTime));
-                    _output.print ("\"");
-                    _output.print ("^^xsd:dateTime");
-                    break;
-                default:
-                    _output.print ("\"");
-                    _output.print (value);
-                    _output.print ("\"");
-                    break;
+            if (value instanceof String) {
+                _output.print ("\"");
+                _output.print (value);
+                _output.print ("\"");
+                _output.print ("^^xsd:string");
+                return;
             }
+            if (value instanceof Date) {
+                dateTime = Calendar.getInstance ();
+                dateTime.setTime ((Date) value);
+                _output.print ("\"");
+                _output.print (DatatypeConverter.printDateTime (dateTime));
+                _output.print ("\"");
+                _output.print ("^^xsd:dateTime");
+                return;
+            }
+            _output.print ("\"");
+            _output.print (value);
+            _output.print ("\"");
         }
 
         public void stop () {
@@ -100,10 +100,10 @@ public class TurtlePrinter {
         }
 
         @Override
-        public void triple (URI subject, URI predicate, Object objectValue, String objectType) {
+        public void triple (URI subject, URI predicate, Literal object) {
             uri (subject);
             uri (predicate);
-            literal (objectValue, objectType);
+            literal (object);
             stop ();
         }
 
@@ -124,16 +124,16 @@ public class TurtlePrinter {
         }
 
         @Override
-        public void triple (String blankSubject, URI predicate, Object objectValue, String objectType) {
+        public void triple (String blankSubject, URI predicate, Literal object) {
             blank (blankSubject);
             uri (predicate);
-            literal (objectValue, objectType);
+            literal (object);
             stop ();
         }
 
         private void uri (URI uri) {
             String text = uri.toString ();
-            
+
             if (text.equals ("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
                 _output.print ("a ");
                 return;

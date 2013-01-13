@@ -2,11 +2,10 @@ package uk.ac.kcl.inf.provoking.model;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 
-public class Document extends HashSet<Description> {
+public class Document extends LinkedList<Description> {
     private Collection<SerialisationHint> _hints;
     
     public Document (Description... elements) {

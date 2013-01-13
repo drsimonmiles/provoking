@@ -43,6 +43,7 @@ import uk.ac.kcl.inf.provoking.model.util.Identified;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.model.util.UniqueIDGenerator;
 import uk.ac.kcl.inf.provoking.model.util.UniqueURIGenerator;
+import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 import static uk.ac.kcl.inf.provoking.serialise.SerialisationHintType.*;
 
@@ -123,30 +124,7 @@ public class ProvBuilder {
     private ProvBuilder addActivity (Activity activity, boolean isNew, String... attributes) throws ProvBuildException {
         store (activity, isNew, attributes);
         if (_prior != null) {
-            if (_prior instanceof ActedOnBehalfOf) {
-                ((ActedOnBehalfOf) _prior).setActivity (activity);
-            }
-            if (_prior instanceof WasAssociatedWith) {
-                ((WasAssociatedWith) _prior).setResponsibleFor (activity);
-            }
-            if (_prior instanceof WasDerivedFrom) {
-                ((WasDerivedFrom) _prior).setDeriver (activity);
-            }
-            if (_prior instanceof WasEndedBy) {
-                ((WasEndedBy) _prior).setEnder (activity);
-            }
-            if (_prior instanceof WasGeneratedBy) {
-                ((WasGeneratedBy) _prior).setGenerater (activity);
-            }
-            if (_prior instanceof WasInformedBy) {
-                ((WasInformedBy) _prior).setInformer (activity);
-            }
-            if (_prior instanceof WasInvalidatedBy) {
-                ((WasInvalidatedBy) _prior).setInvalidater (activity);
-            }
-            if (_prior instanceof WasStartedBy) {
-                ((WasStartedBy) _prior).setStarter (activity);
-            }
+            ProvConstructer.setActivity (_prior, activity);
         }
         return this;
     }
@@ -154,12 +132,7 @@ public class ProvBuilder {
     private ProvBuilder addAgent (Agent agent, boolean isNew, String... attributes) throws ProvBuildException {
         store (agent, isNew, attributes);
         if (_prior != null) {
-            if (_prior instanceof ActedOnBehalfOf) {
-                ((ActedOnBehalfOf) _prior).setOnBehalfOf (agent);
-            }
-            if (_prior instanceof WasAttributedTo) {
-                ((WasAttributedTo) _prior).setAttributedTo (agent);
-            }
+            ProvConstructer.setAgent (_prior, agent);
         }
         return this;
     }
@@ -195,30 +168,7 @@ public class ProvBuilder {
     private ProvBuilder addEntity (Entity entity, boolean isNew, String... attributes) throws ProvBuildException {
         store (entity, isNew, attributes);
         if (_prior != null) {
-            if (_prior instanceof AlternateOf) {
-                ((AlternateOf) _prior).setAlternateB (entity);
-            }
-            if (_prior instanceof HadMember) {
-                ((HadMember) _prior).setMember (entity);
-            }
-            if (_prior instanceof SpecializationOf) {
-                ((SpecializationOf) _prior).setGeneralEntity (entity);
-            }
-            if (_prior instanceof Used) {
-                ((Used) _prior).setUsed (entity);
-            }
-            if (_prior instanceof WasAssociatedWith) {
-                ((WasAssociatedWith) _prior).setPlan (entity);
-            }
-            if (_prior instanceof WasDerivedFrom) {
-                ((WasDerivedFrom) _prior).setDerivedFrom (entity);
-            }
-            if (_prior instanceof WasEndedBy) {
-                ((WasEndedBy) _prior).setTrigger (entity);
-            }
-            if (_prior instanceof WasStartedBy) {
-                ((WasStartedBy) _prior).setTrigger (entity);
-            }
+            ProvConstructer.setEntity (_prior, entity);
         }
         return this;
     }
@@ -226,18 +176,7 @@ public class ProvBuilder {
     private ProvBuilder addLocation (Location location, boolean isNew, String... attributes) throws ProvBuildException {
         store (location, isNew, attributes);
         if (_prior != null) {
-            if (_prior instanceof Activity) {
-                ((Activity) _prior).setLocation (location);
-            }
-            if (_prior instanceof Agent) {
-                ((Agent) _prior).setLocation (location);
-            }
-            if (_prior instanceof Entity) {
-                ((Entity) _prior).setLocation (location);
-            }
-            if (_prior instanceof InstantaneousEvent) {
-                ((InstantaneousEvent) _prior).setLocation (location);
-            }
+            ProvConstructer.setLocation (_prior, location);
         }
         return this;
     }
@@ -250,12 +189,7 @@ public class ProvBuilder {
     private ProvBuilder addRole (Role role, boolean isNew, String... attributes) throws ProvBuildException {
         store (role, isNew, attributes);
         if (_prior != null) {
-            if (_prior instanceof InstantaneousEvent) {
-                ((InstantaneousEvent) _prior).setRole (role);
-            }
-            if (_prior instanceof WasAssociatedWith) {
-                ((WasAssociatedWith) _prior).setRole (role);
-            }
+            ProvConstructer.setRole (_prior, role);
         }
         return this;
     }

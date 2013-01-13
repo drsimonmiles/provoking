@@ -1,7 +1,6 @@
 package uk.ac.kcl.inf.provoking.serialise.rdf;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,7 +35,6 @@ import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 
 public class RDFSerialiser {
-    private static URI RDF_TYPE = null;
     private static int _lastBlank = 0;
     private List<TriplesListener> _listeners;
     private Map<Description, String> _blankIDs;
@@ -44,12 +42,6 @@ public class RDFSerialiser {
     public RDFSerialiser (TriplesListener... listeners) {
         _listeners = new LinkedList<> (Arrays.asList (listeners));
         _blankIDs = new HashMap<> ();
-        if (RDF_TYPE == null) {
-            try {
-                RDF_TYPE = new URI ("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-            } catch (URISyntaxException ex) {
-            }
-        }
     }
 
     private String blank (Description description) {
@@ -64,9 +56,9 @@ public class RDFSerialiser {
         return blank;
     }
 
-    private void fireLiteral (URI subject, URI predicate, Object object) {
+    private void fire (URI subject, URI predicate, Literal object) {
         for (TriplesListener listener : _listeners) {
-            listener.triple (subject, predicate, object, object.getClass ().getSimpleName ());
+            listener.triple (subject, predicate, object);
         }
     }
 
@@ -82,9 +74,9 @@ public class RDFSerialiser {
         }
     }
 
-    private void fireLiteral (String blankSubject, URI predicate, Object object) {
+    private void fire (String blankSubject, URI predicate, Literal object) {
         for (TriplesListener listener : _listeners) {
-            listener.triple (blankSubject, predicate, object, object.getClass ().getSimpleName ());
+            listener.triple (blankSubject, predicate, object);
         }
     }
 
@@ -292,7 +284,7 @@ public class RDFSerialiser {
                     if (attribute.getValue () instanceof URI) {
                         if (attribute.getValue ().equals (Term.role.uri ()) || attribute.getValue ().equals (Term.hadRole.uri ())) {
                             if (!rolesAndLocations.contains ((URI) attribute.getValue ())) {
-                                fire ((URI) attribute.getValue (), RDF_TYPE, Term.Role.uri ());
+                                fire ((URI) attribute.getValue (), RDF.typeURI (), Term.Role.uri ());
                                 rolesAndLocations.add ((URI) attribute.getValue ());
                             }
                             serialise (description, Term.hadRole.uri (), (URI) attribute.getValue ());
@@ -300,7 +292,7 @@ public class RDFSerialiser {
                         }
                         if (attribute.getValue ().equals (Term.location.uri ()) || attribute.getValue ().equals (Term.atLocation.uri ())) {
                             if (!rolesAndLocations.contains ((URI) attribute.getValue ())) {
-                                fire ((URI) attribute.getValue (), RDF_TYPE, Term.Location.uri ());
+                                fire ((URI) attribute.getValue (), RDF.typeURI (), Term.Location.uri ());
                                 rolesAndLocations.add ((URI) attribute.getValue ());
                             }
                             serialise (description, Term.atLocation.uri (), (URI) attribute.getValue ());
@@ -357,21 +349,21 @@ public class RDFSerialiser {
         }
     }
 
-    private void serialiseLiteral (Description subject, Term predicate, Object objectLiteral) {
-        serialiseLiteral (subject, predicate.uri (), objectLiteral);
+    private void serialiseLiteral (Description subject, Term predicate, Object object) {
+        serialiseLiteral (subject, predicate.uri (), object);
     }
 
-    private void serialiseLiteral (Description subject, URI predicate, Object objectLiteral) {
+    private void serialiseLiteral (Description subject, URI predicate, Object object) {
         URI subjectID;
 
-        if (subject == null || objectLiteral == null) {
+        if (subject == null || object == null) {
             return;
         }
         subjectID = uriID (subject);
         if (subjectID == null) {
-            fireLiteral (blank (subject), predicate, objectLiteral);
+            fire (blank (subject), predicate, new Literal (object));
         } else {
-            fireLiteral (subjectID, predicate, objectLiteral);
+            fire (subjectID, predicate, new Literal (object));
         }
     }
 
@@ -379,14 +371,14 @@ public class RDFSerialiser {
         URI id = uriID (subject);
 
         if (id == null) {
-            fire (blank (subject), RDF_TYPE, term.uri ());
+            fire (blank (subject), RDF.typeURI (), term.uri ());
         } else {
-            fire (id, RDF_TYPE, term.uri ());
+            fire (id, RDF.typeURI (), term.uri ());
         }
     }
 
     private void type (String blank, Term term) {
-        fire (blank, RDF_TYPE, term.uri ());
+        fire (blank, RDF.typeURI (), term.uri ());
     }
 
     private URI uriID (Description identified) {
