@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf.provoking.builder;
 
+import java.io.PrintWriter;
 import java.net.URI;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -10,6 +11,7 @@ import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.serialise.rdf.RDFSerialiser;
 import uk.ac.kcl.inf.provoking.serialise.rdf.TriplesListener;
+import uk.ac.kcl.inf.provoking.serialise.rdf.turtle.TurtlePrinter;
 
 public class PrimerBuidTest {
     public PrimerBuidTest () {
@@ -44,12 +46,29 @@ public class PrimerBuidTest {
         b.setPrefix ("foaf:", "http://xmlns.com/foaf/0.1/");
         
         b.entity ("article", "dcterms:title=Crime rises in cities");
-        b.entity ("composition").wasGeneratedBy ().activity ("compose");
-        b.activity ("compose").used ().entity ("dataSet1");
-        b.activity ("compose").used ().entity ("regionList");
+
+        b.entity ("composition").wasGeneratedBy ("prov:hadRole=ex:composedData").activity ("compose");
+        b.activity ("compose").used ("prov:hadRole=ex:dataToCompose").entity ("dataSet1");
+        b.activity ("compose").used ("prov:hadRole=ex:regionsToAggregateBy").entity ("regionList");
         b.entity ("chart1").wasGeneratedBy ().activity ("illustrate").used ().entity ("composition");
+
+        b.activity ("compose").wasAssociatedWith ("prov:hadRole=ex:analyst").
+                person ("derek", "foaf:givenName=Derek", "foaf:mbox=mailto:derek@example.org");
+        b.activity ("illustrate").wasAssociatedWith ().person ("derek");
+        b.person ("derek").actedOnBehalfOf ().organization ("chartgen", "foaf:name=Chart Generators Inc");
+        b.entity ("chart1").wasAttributedTo ().person ("derek");
+ 
+        b.entity ("dataSet2").wasRevisionOf ().entity ("dataSet1");
+        b.entity ("chart2").wasDerivedFrom ().entity ("dataSet2");
+        b.entity ("chart2").wasRevisionOf ().entity ("chart1");
         
-        b.activity ("compose").wasAssociatedWith ().person ("derek", "foaf:givenName=Derek", "foaf:mbox=mailto:derek@example.org");
+        b.activity (b.xsdDate ("2012-03-31T09:21:00"), b.xsdDate ("2012-04-01T15:21:00"), "correct");
+        b.activity ("correct").wasAssociatedWith ("correcting").person ("edith").
+                where ("correcting").plan ("instructions");
+        b.entity ("dataSet2").wasGeneratedBy ().activity ("correct");
+
+        b.entity ("chart1").wasGeneratedBy (b.xsdDate ("2012-03-02T10:30:00")).activity ("compile1");
+        b.entity ("chart2").wasGeneratedBy (b.xsdDate ("2012-04-01T15:21:00")).activity ("compile2");
         
         b.entity ("blogEntry").wasQuotedFrom ().entity ("article");
         b.entity ("articleV1").specializationOf ().entity ("article");
@@ -58,7 +77,8 @@ public class PrimerBuidTest {
         
         document = b.build ();
         
-        new RDFSerialiser (new TriplesListener () {
+        new TurtlePrinter (new PrintWriter (System.out, true)).serialise (document);
+        /*new RDFSerialiser (new TriplesListener () {
             @Override
             public void triple (URI subject, URI predicate, URI object) {
                 System.out.println ("<" + subject + "> <" + predicate + "> <" + object + ">");
@@ -88,6 +108,6 @@ public class PrimerBuidTest {
             public void triple (String blankSubject, URI predicate, String blankObject) {
                 System.out.println (blankSubject + " <" + predicate + "> " + blankObject);
             }
-        }).serialise (document);
+        }).serialise (document);*/
     }
 }

@@ -7,16 +7,20 @@ import java.util.Map;
 
 public enum Term {
     Account, Activity, activity, Agent, agent, actedOnBehalfOf, alternateOf, 
-    Association, atTime, Attribution, Bundle, Collection, Communication, Delegation, Derivation, EmptyCollection, End, endedAtTime, 
-    Entity, entity, Generation, hadMember, hadPrimarySource, Invalidation, label, Location, location,
+    Association, atLocation, atTime, Attribution, Bundle, Collection, Communication, Delegation, 
+    Derivation, EmptyCollection, End, endedAtTime, 
+    Entity, entity, Generation, hadGeneration, hadMember, hadPlan, hadPrimarySource, hadRole, hadUsage,
+    Invalidation, label, Location, location,
     Note, Organization,
-    Person, Plan, PrimarySource, qualifiedAssociation, qualifiedDelegation, qualifiedUsage, 
-    Revision, role, Quotation, 
+    Person, Plan, PrimarySource, qualifiedAssociation, qualifiedAttribution, qualifiedCommunication,
+    qualifiedDelegation, qualifiedDerivation, qualifiedEnd, qualifiedGeneration,
+    qualifiedInvalidation, qualifiedPrimarySource, qualifiedRevision, qualifiedQuotation, qualifiedStart, qualifiedUsage,
+    Revision, Role, role, Quotation, 
     SoftwareAgent, specializationOf, Start, startedAtTime, type, Usage,
     wasAssociatedWith,
     wasAttributedTo,
-    wasDerivedFrom,
-    wasGeneratedBy, wasInformedBy, wasStartedByActivity, used, value;
+    wasDerivedFrom, wasEndedBy,
+    wasGeneratedBy, wasInformedBy, wasInvalidatedBy, wasRevisionOf, wasQuotedFrom, wasStartedBy, used, value;
     public final static String PROV_NS = "http://www.w3.org/ns/prov#";
 
     public URI uri () {

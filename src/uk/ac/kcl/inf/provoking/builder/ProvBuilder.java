@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.DatatypeConverter;
 import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
 import uk.ac.kcl.inf.provoking.model.Activity;
 import uk.ac.kcl.inf.provoking.model.Agent;
@@ -63,19 +64,19 @@ public class ProvBuilder {
         recogniseURIScheme ("mailto");
         recogniseURIScheme ("urn");
     }
-    
+
     public ProvBuilder (IDGenerator idgen) {
         this (new Document (), idgen);
     }
-    
+
     public ProvBuilder (Document addToExisting, String idStart) {
         this (addToExisting, new UniqueIDGenerator (idStart));
     }
-    
+
     public ProvBuilder (String idStart) {
         this (new UniqueIDGenerator (idStart));
     }
-        
+
     public ProvBuilder (String prefix, String idVocabulary) {
         this (new UniqueURIGenerator (idVocabulary));
         setPrefix (prefix, idVocabulary);
@@ -99,8 +100,8 @@ public class ProvBuilder {
 
     public ProvBuilder activity (String... attributes) throws ProvBuildException {
         Description bookmarked;
-        
-        if (attributes.length == 1) {
+
+        if (attributes.length >= 1) {
             bookmarked = _bookmarks.get (attributes[0]);
             if (bookmarked != null) {
                 if (!(bookmarked instanceof Activity)) {
@@ -160,18 +161,19 @@ public class ProvBuilder {
         return this;
     }
 
-    private void addAttributes (AttributeHolder addTo, String... attributes) throws ProvBuildException {
+    private void addAttributes (AttributeHolder addTo, boolean isNew, String... attributes) throws ProvBuildException {
         int equals;
-        String bookmark, keyText, valueText;
+        String keyText, valueText;
         Object key, value;
 
         for (String attribute : attributes) {
             equals = attribute.indexOf ('=');
             if (equals < 0) {
-                bookmark = attribute;
-                _bookmarks.put (bookmark, (Description) addTo);
-                if (_bookmarksAsLabels) {
-                    addTo.addAttribute (Term.label.uri (), bookmark);
+                if (isNew) {
+                    _bookmarks.put (attribute, (Description) addTo);
+                    if (_bookmarksAsLabels) {
+                        addTo.addAttribute (Term.label.uri (), attribute);
+                    }
                 }
                 continue;
             }
@@ -225,8 +227,8 @@ public class ProvBuilder {
 
     public ProvBuilder agent (String... attributes) {
         Description bookmarked;
-        
-        if (attributes.length == 1) {
+
+        if (attributes.length >= 1) {
             bookmarked = _bookmarks.get (attributes[0]);
             if (bookmarked != null) {
                 if (!(bookmarked instanceof Agent)) {
@@ -263,15 +265,15 @@ public class ProvBuilder {
     public ProvBuilder collection (String... attributes) {
         return addEntity (new Collection (idgen ("Collection", attributes)), true, attributes);
     }
-    
+
     public ProvBuilder emptyCollection (String... attributes) {
         return addEntity (new EmptyCollection (idgen ("EmptyCollection", attributes)), true, attributes);
     }
-    
+
     public ProvBuilder entity (String... attributes) {
         Description bookmarked;
-        
-        if (attributes.length == 1) {
+
+        if (attributes.length >= 1) {
             bookmarked = _bookmarks.get (attributes[0]);
             if (bookmarked != null) {
                 if (!(bookmarked instanceof Entity)) {
@@ -303,7 +305,7 @@ public class ProvBuilder {
         }
         return (Entity) _current;
     }
-    
+
     public ProvBuilder hadMember () throws ProvBuildException {
         return store (new HadMember (getEntity ("hadMember"), null), true);
     }
@@ -311,7 +313,7 @@ public class ProvBuilder {
     public ProvBuilder hadPrimarySource (String... attributes) throws ProvBuildException {
         return store (new HadPrimarySource (idgen ("HadPrimarySource", attributes), getEntity ("hadPrimarySource"), null), true);
     }
-    
+
     private Object idgen (String descriptive, String... attributes) {
         for (String attribute : attributes) {
             if (attribute.indexOf ('=') < 0) {
@@ -345,7 +347,7 @@ public class ProvBuilder {
     public void recogniseURIScheme (String scheme) {
         _resolvers.add (new URISchemeResolver (scheme));
     }
-    
+
     private Object resolve (String text) {
         for (AbbreviationResolver resolver : _resolvers) {
             if (resolver.appliesTo (text)) {
@@ -359,13 +361,13 @@ public class ProvBuilder {
         _bookmarksAsLabels = bookmarksAsLabels;
         return this;
     }
-    
+
     public ProvBuilder setPrefix (String prefix, String vocabularyURI) {
         addResolver (new URIPrefixResolver (prefix, vocabularyURI));
         _document.addSerialisationHint (new SerialisationHint (namespacePrefix, prefix, vocabularyURI));
         return this;
     }
-    
+
     public ProvBuilder softwareAgent (String... attributes) {
         return addAgent (new SoftwareAgent (idgen ("SoftwareAgent", attributes)), true, attributes);
     }
@@ -384,10 +386,10 @@ public class ProvBuilder {
         if (_document == null) {
             throw new ProvBuildException ("Must start a document (or bundle) before adding to it");
         }
+        if (item instanceof AttributeHolder) {
+            addAttributes ((AttributeHolder) item, isNew, attributes);
+        }
         if (isNew) {
-            if (item instanceof AttributeHolder) {
-                addAttributes ((AttributeHolder) item, attributes);
-            }
             _document.add (item);
         }
         _prior = _current;
@@ -409,8 +411,9 @@ public class ProvBuilder {
     public ProvBuilder used (String... attributes) throws ProvBuildException {
         return used ((Date) null, attributes);
     }
-    
+
     public ProvBuilder wasAssociatedWith (String... attributes) throws ProvBuildException {
+
         return store (new WasAssociatedWith (idgen ("WasAssociatedWith", attributes), getActivity ("wasAssociatedWith"), null), true, attributes);
     }
 
@@ -444,7 +447,7 @@ public class ProvBuilder {
     public ProvBuilder wasGeneratedBy (String... attributes) throws ProvBuildException {
         return wasGeneratedBy ((Date) null, attributes);
     }
-    
+
     public ProvBuilder wasInformedBy (String... attributes) throws ProvBuildException {
         return store (new WasInformedBy (idgen ("WasInformedBy", attributes), getActivity ("wasInformedBy"), null), true, attributes);
     }
@@ -471,5 +474,22 @@ public class ProvBuilder {
 
     public ProvBuilder wasStartedBy (String... attributes) throws ProvBuildException {
         return wasStartedBy ((Date) null, attributes);
+    }
+
+    public ProvBuilder where (String bookmark) {
+        Description bookmarked;
+
+        bookmarked = _bookmarks.get (bookmark);
+        if (bookmarked == null) {
+            throw new ProvBuildException ("Bookmark reference not recognised: " + bookmark);
+        }
+        _prior = _current;
+        _current = bookmarked;
+
+        return this;
+    }
+
+    public Date xsdDate (String xsdDateTimeString) {
+        return DatatypeConverter.parseDateTime (xsdDateTimeString).getTime ();
     }
 }

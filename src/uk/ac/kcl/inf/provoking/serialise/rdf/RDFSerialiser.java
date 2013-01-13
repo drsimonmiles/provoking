@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
+import uk.ac.kcl.inf.provoking.model.Activity;
 import uk.ac.kcl.inf.provoking.model.AlternateOf;
 import uk.ac.kcl.inf.provoking.model.Attribute;
 import uk.ac.kcl.inf.provoking.model.Description;
@@ -16,6 +17,16 @@ import uk.ac.kcl.inf.provoking.model.HadMember;
 import uk.ac.kcl.inf.provoking.model.HadPrimarySource;
 import uk.ac.kcl.inf.provoking.model.SpecializationOf;
 import uk.ac.kcl.inf.provoking.model.Used;
+import uk.ac.kcl.inf.provoking.model.WasAssociatedWith;
+import uk.ac.kcl.inf.provoking.model.WasAttributedTo;
+import uk.ac.kcl.inf.provoking.model.WasDerivedFrom;
+import uk.ac.kcl.inf.provoking.model.WasEndedBy;
+import uk.ac.kcl.inf.provoking.model.WasGeneratedBy;
+import uk.ac.kcl.inf.provoking.model.WasInformedBy;
+import uk.ac.kcl.inf.provoking.model.WasInvalidatedBy;
+import uk.ac.kcl.inf.provoking.model.WasQuotedFrom;
+import uk.ac.kcl.inf.provoking.model.WasRevisionOf;
+import uk.ac.kcl.inf.provoking.model.WasStartedBy;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Identified;
 import uk.ac.kcl.inf.provoking.model.util.Term;
@@ -50,7 +61,7 @@ public class RDFSerialiser {
 
         return blank;
     }
-    
+
     private void fireLiteral (URI subject, URI predicate, Object object) {
         for (TriplesListener listener : _listeners) {
             listener.triple (subject, predicate, object, object.getClass ().getSimpleName ());
@@ -86,9 +97,14 @@ public class RDFSerialiser {
             listener.triple (blankSubject, predicate, blankObject);
         }
     }
-    
+
     private boolean isMinimal (Description description, Document document, Object... optionalArguments) {
-        if (((AttributeHolder) description).hasAttributes ()) {
+        for (Attribute attribute : ((AttributeHolder) description).getAttributes ()) {
+            if (!attribute.getKey ().equals (Term.type.uri ())) {
+                return false;
+            }
+        }
+        if (description instanceof TimestampedEdge && ((TimestampedEdge) description).getTime () != null) {
             return false;
         }
         for (Object argument : optionalArguments) {
@@ -103,12 +119,16 @@ public class RDFSerialiser {
     }
 
     public void serialise (Document document) {
+        List<URI> rolesAndLocations = new LinkedList<> ();
+        
         for (Description description : document) {
-            serialise (description, document);
+            serialise (description, document, rolesAndLocations);
         }
     }
 
-    public void serialise (Description description, Document document) {
+    private void serialise (Description description, Document document, List<URI> rolesAndLocations) {
+        Term qualifiedRelation = Term.qualifiedDerivation;
+        
         // References do not have serialisations in this document
         if (description instanceof Identified && ((Identified) description).isReference ()) {
             return;
@@ -126,9 +146,23 @@ public class RDFSerialiser {
             serialise (((HadMember) description).getCollection (), Term.hadMember, ((HadMember) description).getMember ());
             return;
         }
+        // Activities may have start and end times
+        if (description instanceof Activity) {
+            serialiseLiteral (description, Term.startedAtTime, ((Activity) description).getStartedAt ());
+            serialiseLiteral (description, Term.startedAtTime, ((Activity) description).getEndedAt ());
+        }
         // Relations that are subtypes of other relations
         if (description instanceof HadPrimarySource) {
             serialise (((HadPrimarySource) description).getDerived (), Term.hadPrimarySource, ((HadPrimarySource) description).getDerivedFrom ());
+            qualifiedRelation = Term.qualifiedPrimarySource;
+        }
+        if (description instanceof WasQuotedFrom) {
+            serialise (((WasQuotedFrom) description).getDerived (), Term.wasQuotedFrom, ((WasQuotedFrom) description).getDerivedFrom ());
+            qualifiedRelation = Term.qualifiedQuotation;
+        }
+        if (description instanceof WasRevisionOf) {
+            serialise (((WasRevisionOf) description).getDerived (), Term.wasRevisionOf, ((WasRevisionOf) description).getDerivedFrom ());
+            qualifiedRelation = Term.qualifiedRevision;
         }
         // Potentially non-binary relations
         if (description instanceof ActedOnBehalfOf) {
@@ -142,11 +176,82 @@ public class RDFSerialiser {
         }
         if (description instanceof Used) {
             serialise (((Used) description).getUser (), Term.used, ((Used) description).getUsed ());
-            if (isMinimal (description, document, ((Used) description).getTime ())) {
+            if (isMinimal (description, document)) {
                 return;
             }
             serialise (((Used) description).getUser (), Term.qualifiedUsage, description);
             serialise (description, Term.entity, ((Used) description).getUsed ());
+        }
+        if (description instanceof WasAssociatedWith) {
+            serialise (((WasAssociatedWith) description).getResponsibleFor (), Term.wasAssociatedWith, ((WasAssociatedWith) description).getResponsible ());
+            if (isMinimal (description, document, ((WasAssociatedWith) description).getPlan ())) {
+                return;
+            }
+            serialise (((WasAssociatedWith) description).getResponsibleFor (), Term.qualifiedAssociation, description);
+            serialise (description, Term.agent, ((WasAssociatedWith) description).getResponsible ());
+            serialise (description, Term.hadPlan, ((WasAssociatedWith) description).getPlan ());
+        }
+        if (description instanceof WasAttributedTo) {
+            serialise (((WasAttributedTo) description).getAttributed (), Term.wasAttributedTo, ((WasAttributedTo) description).getAttributedTo ());
+            if (isMinimal (description, document)) {
+                return;
+            }
+            serialise (((WasAttributedTo) description).getAttributed (), Term.qualifiedAttribution, description);
+            serialise (description, Term.agent, ((WasAttributedTo) description).getAttributedTo ());
+        }
+        if (description instanceof WasDerivedFrom) {
+            serialise (((WasDerivedFrom) description).getDerived (), Term.wasDerivedFrom, ((WasDerivedFrom) description).getDerivedFrom ());
+            if (isMinimal (description, document, ((WasDerivedFrom) description).getDeriver (),
+                           ((WasDerivedFrom) description).getGeneration (), ((WasDerivedFrom) description).getUsage ())) {
+                return;
+            }
+            serialise (((WasDerivedFrom) description).getDerived (), qualifiedRelation, description);
+            serialise (description, Term.entity, ((WasDerivedFrom) description).getDerivedFrom ());
+            serialise (description, Term.activity, ((WasDerivedFrom) description).getDeriver ());
+            serialise (description, Term.hadGeneration, ((WasDerivedFrom) description).getGeneration ());
+            serialise (description, Term.hadUsage, ((WasDerivedFrom) description).getUsage ());
+        }
+        if (description instanceof WasEndedBy) {
+            serialise (((WasEndedBy) description).getEnded (), Term.wasEndedBy, ((WasEndedBy) description).getTrigger ());
+            if (isMinimal (description, document, ((WasEndedBy) description).getEnder ())) {
+                return;
+            }
+            serialise (((WasEndedBy) description).getEnded (), Term.qualifiedEnd, description);
+            serialise (description, Term.entity, ((WasEndedBy) description).getTrigger ());
+            serialise (description, Term.activity, ((WasEndedBy) description).getEnder ());
+        }
+        if (description instanceof WasGeneratedBy) {
+            serialise (((WasGeneratedBy) description).getGenerated (), Term.wasGeneratedBy, ((WasGeneratedBy) description).getGenerater ());
+            if (isMinimal (description, document)) {
+                return;
+            }
+            serialise (((WasGeneratedBy) description).getGenerated (), Term.qualifiedGeneration, description);
+            serialise (description, Term.activity, ((WasGeneratedBy) description).getGenerater ());
+        }
+        if (description instanceof WasInformedBy) {
+            serialise (((WasInformedBy) description).getInformed (), Term.wasInformedBy, ((WasInformedBy) description).getInformer ());
+            if (isMinimal (description, document)) {
+                return;
+            }
+            serialise (((WasInformedBy) description).getInformed (), Term.qualifiedCommunication, description);
+            serialise (description, Term.activity, ((WasInformedBy) description).getInformer ());
+        }
+        if (description instanceof WasInvalidatedBy) {
+            serialise (((WasInvalidatedBy) description).getInvalidated (), Term.wasInvalidatedBy, ((WasInvalidatedBy) description).getInvalidater ());
+            if (isMinimal (description, document)) {
+                return;
+            }
+            serialise (((WasInvalidatedBy) description).getInvalidated (), Term.qualifiedInvalidation, description);
+            serialise (description, Term.activity, ((WasInvalidatedBy) description).getInvalidater ());
+        }
+        if (description instanceof WasStartedBy) {
+            serialise (((WasStartedBy) description).getStarted (), Term.wasStartedBy, ((WasStartedBy) description).getTrigger ());
+            if (isMinimal (description, document, ((WasStartedBy) description).getStarter ())) {
+                return;
+            }
+            serialise (((WasStartedBy) description).getStarted (), Term.qualifiedStart, description);
+            serialise (description, Term.entity, ((WasStartedBy) description).getTrigger ());
+            serialise (description, Term.activity, ((WasStartedBy) description).getStarter ());
         }
         // Record event timestamps
         if (description instanceof TimestampedEdge) {
@@ -163,6 +268,22 @@ public class RDFSerialiser {
             for (Attribute attribute : ((AttributeHolder) description).getAttributes ()) {
                 if (attribute.getKey () instanceof URI && !attribute.getKey ().equals (Term.type.uri ())) {
                     if (attribute.getValue () instanceof URI) {
+                        if (attribute.getValue ().equals (Term.role.uri ()) || attribute.getValue ().equals (Term.hadRole.uri ())) {
+                            if (!rolesAndLocations.contains ((URI) attribute.getValue ())) {
+                                fire ((URI) attribute.getValue (), RDF_TYPE, Term.Role.uri ());
+                                rolesAndLocations.add ((URI) attribute.getValue ());
+                            }
+                            serialise (description, Term.hadRole.uri (), (URI) attribute.getValue ());
+                            continue;
+                        }
+                        if (attribute.getValue ().equals (Term.location.uri ()) || attribute.getValue ().equals (Term.atLocation.uri ())) {
+                            if (!rolesAndLocations.contains ((URI) attribute.getValue ())) {
+                                fire ((URI) attribute.getValue (), RDF_TYPE, Term.Location.uri ());
+                                rolesAndLocations.add ((URI) attribute.getValue ());
+                            }
+                            serialise (description, Term.atLocation.uri (), (URI) attribute.getValue ());
+                            continue;
+                        }
                         serialise (description, (URI) attribute.getKey (), (URI) attribute.getValue ());
                     } else {
                         serialiseLiteral (description, (URI) attribute.getKey (), attribute.getValue ());
@@ -217,7 +338,7 @@ public class RDFSerialiser {
     private void serialiseLiteral (Description subject, Term predicate, Object objectLiteral) {
         serialiseLiteral (subject, predicate.uri (), objectLiteral);
     }
-    
+
     private void serialiseLiteral (Description subject, URI predicate, Object objectLiteral) {
         URI subjectID;
 
