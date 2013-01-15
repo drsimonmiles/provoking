@@ -1,9 +1,7 @@
 package uk.ac.kcl.inf.provoking.builder;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

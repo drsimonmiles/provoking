@@ -55,38 +55,44 @@ public class RDFSerialiser {
 
         return blank;
     }
-
+    
     private void fire (URI subject, URI predicate, Literal object) {
+        predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
             listener.triple (subject, predicate, object);
         }
     }
 
     private void fire (URI subject, URI predicate, URI object) {
+        predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
             listener.triple (subject, predicate, object);
         }
     }
 
     private void fire (URI subject, URI predicate, String blankObject) {
+        predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
             listener.triple (subject, predicate, blankObject);
         }
     }
 
     private void fire (String blankSubject, URI predicate, Literal object) {
+        predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
             listener.triple (blankSubject, predicate, object);
         }
     }
 
     private void fire (String blankSubject, URI predicate, URI object) {
+        predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
             listener.triple (blankSubject, predicate, object);
         }
     }
 
     private void fire (String blankSubject, URI predicate, String blankObject) {
+        predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
             listener.triple (blankSubject, predicate, blankObject);
         }
@@ -96,10 +102,8 @@ public class RDFSerialiser {
      * Returns true if the given description can be expressed by a binary, rather than qualified, relation
      */
     private boolean isMinimal (Description description, Document document, Object... optionalArguments) {
-        for (Attribute attribute : ((AttributeHolder) description).getAttributes ()) {
-            if (!attribute.getKey ().equals (Term.type.uri ())) {
-                return false;
-            }
+        if (description instanceof AttributeHolder && ((AttributeHolder) description).hasAttributes ()) {
+            return false;
         }
         if (description instanceof InstantaneousEvent) {
             if (((InstantaneousEvent) description).getTime () != null) {
@@ -121,6 +125,19 @@ public class RDFSerialiser {
             return false;
         }
         return true;
+    }
+
+    private URI provnToProvo (URI predicate) {
+        if (predicate.equals (Term.type.uri ())) {
+            return RDF.typeURI ();
+        }
+        if (predicate.equals (Term.value.uri ())) {
+            return RDF.valueURI ();
+        }
+        if (predicate.equals (Term.label.uri ())) {
+            return RDF.labelURI ();
+        }
+        return predicate;
     }
 
     public void serialise (Document document) {
@@ -280,7 +297,7 @@ public class RDFSerialiser {
         // Record attributes
         if (description instanceof AttributeHolder) {
             for (Attribute attribute : ((AttributeHolder) description).getAttributes ()) {
-                if (attribute.getKey () instanceof URI && !attribute.getKey ().equals (Term.type.uri ())) {
+                if (attribute.getKey () instanceof URI) {
                     if (attribute.getValue () instanceof URI) {
                         if (attribute.getValue ().equals (Term.role.uri ()) || attribute.getValue ().equals (Term.hadRole.uri ())) {
                             if (!rolesAndLocations.contains ((URI) attribute.getValue ())) {

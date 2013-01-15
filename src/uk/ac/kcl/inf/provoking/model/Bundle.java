@@ -9,7 +9,6 @@ public class Bundle extends Entity {
     public Bundle (Object identifier, Document descriptions) {
         super (identifier);
         _descriptions = descriptions;
-        subtype (Term.Bundle);
     }
     
     public Bundle (Object identifier) {
