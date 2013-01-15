@@ -53,6 +53,7 @@ public class ProvBuilder {
     private Map<String, Description> _bookmarks;
     private IDGenerator _idgen;
     private boolean _bookmarksAsLabels;
+    private boolean _nameRelations;
 
     public ProvBuilder (Document addToExisting, IDGenerator idgen) {
         _document = addToExisting;
@@ -62,6 +63,7 @@ public class ProvBuilder {
         _bookmarks = new HashMap<> ();
         _idgen = idgen;
         _bookmarksAsLabels = false;
+        _nameRelations = false;
         setPrefix ("prov:", Term.PROV_NS);
         recogniseURIScheme ("http");
         recogniseURIScheme ("mailto");
@@ -94,11 +96,11 @@ public class ProvBuilder {
     }
 
     public ProvBuilder actedOnBehalfOf (String... attributes) throws ProvBuildException {
-        return store (new ActedOnBehalfOf (idgen ("ActedOnBehalfOf", attributes), getAgent ("actedOnBehalfOf"), null), true, attributes);
+        return store (new ActedOnBehalfOf (idGenRel ("ActedOnBehalfOf", attributes), getAgent ("actedOnBehalfOf"), null), true, attributes);
     }
 
     public ProvBuilder activity (Date started, Date ended, String... attributes) throws ProvBuildException {
-        return addActivity (new Activity (idgen ("Activity", attributes), started, ended), true, attributes);
+        return addActivity (new Activity (idGen ("Activity", attributes), started, ended), true, attributes);
     }
 
     public ProvBuilder activity (String... attributes) throws ProvBuildException {
@@ -205,7 +207,7 @@ public class ProvBuilder {
                 return addAgent ((Agent) bookmarked, false, attributes);
             }
         }
-        return addAgent (new Agent (idgen ("Agent", attributes)), true, attributes);
+        return addAgent (new Agent (idGen ("Agent", attributes)), true, attributes);
     }
 
     public ProvBuilder agentRef (Object identifier) {
@@ -231,11 +233,11 @@ public class ProvBuilder {
     }
 
     public ProvBuilder collection (String... attributes) {
-        return addEntity (new Collection (idgen ("Collection", attributes)), true, attributes);
+        return addEntity (new Collection (idGen ("Collection", attributes)), true, attributes);
     }
-
+        
     public ProvBuilder emptyCollection (String... attributes) {
-        return addEntity (new EmptyCollection (idgen ("EmptyCollection", attributes)), true, attributes);
+        return addEntity (new EmptyCollection (idGen ("EmptyCollection", attributes)), true, attributes);
     }
 
     public ProvBuilder entity (String... attributes) {
@@ -250,7 +252,7 @@ public class ProvBuilder {
                 return addEntity ((Entity) bookmarked, false, attributes);
             }
         }
-        return addEntity (new Entity (idgen ("Entity", attributes)), true, attributes);
+        return addEntity (new Entity (idGen ("Entity", attributes)), true, attributes);
     }
 
     private Activity getActivity (String edgeType) throws ProvBuildException {
@@ -279,16 +281,7 @@ public class ProvBuilder {
     }
 
     public ProvBuilder hadPrimarySource (String... attributes) throws ProvBuildException {
-        return store (new HadPrimarySource (idgen ("HadPrimarySource", attributes), getEntity ("hadPrimarySource"), null), true);
-    }
-
-    private Object idgen (String descriptive, String... attributes) {
-        for (String attribute : attributes) {
-            if (attribute.indexOf ('=') < 0) {
-                return _idgen.generateID (attribute);
-            }
-        }
-        return _idgen.generateID (descriptive);
+        return store (new HadPrimarySource (idGenRel ("HadPrimarySource", attributes), getEntity ("hadPrimarySource"), null), true);
     }
 
     public ProvBuilder id (Object identifier) throws ProvBuildException {
@@ -298,6 +291,27 @@ public class ProvBuilder {
         ((Identified) _current).setIdentifier (identifier);
         _document.addSerialisationHint (new SerialisationHint (explicitlyIdentified, _current));
         return this;
+    }
+
+    private Object idGen (String descriptive, String... attributes) {
+        for (String attribute : attributes) {
+            if (attribute.indexOf ('=') < 0 && !attribute.startsWith ("*")) {
+                return _idgen.generateID (attribute);
+            }
+        }
+        if (descriptive == null) {
+            return null;
+        } else {
+            return _idgen.generateID (descriptive);
+        }
+    }
+    
+    private Object idGenRel (String descriptive, String... attributes) {
+        if (_nameRelations) {
+            return idGen (descriptive, attributes);
+        } else {
+            return null;
+        }
     }
 
     public ProvBuilder location (String id, String... attributes) {
@@ -318,17 +332,17 @@ public class ProvBuilder {
     }
 
     public ProvBuilder organization (String... attributes) {
-        return addAgent (new Organization (idgen ("Organization", attributes)), true, attributes);
+        return addAgent (new Organization (idGen ("Organization", attributes)), true, attributes);
     }
 
     public ProvBuilder person (String... attributes) {
-        return addAgent (new Person (idgen ("Person", attributes)), true, attributes);
+        return addAgent (new Person (idGen ("Person", attributes)), true, attributes);
     }
 
     public ProvBuilder plan (String... attributes) {
-        return addEntity (new Plan (idgen ("Plan", attributes)), true, attributes);
+        return addEntity (new Plan (idGen ("Plan", attributes)), true, attributes);
     }
-
+    
     public void recogniseURIScheme (String scheme) {
         _resolvers.add (new URISchemeResolver (scheme));
     }
@@ -364,6 +378,11 @@ public class ProvBuilder {
         return this;
     }
 
+    public ProvBuilder setNameRelations (boolean nameRelations) {
+        _nameRelations = nameRelations;
+        return this;
+    }
+    
     public ProvBuilder setPrefix (String prefix, String vocabularyURI) {
         addResolver (new URIPrefixResolver (prefix, vocabularyURI));
         _document.addSerialisationHint (new SerialisationHint (namespacePrefix, prefix, vocabularyURI));
@@ -371,7 +390,7 @@ public class ProvBuilder {
     }
 
     public ProvBuilder softwareAgent (String... attributes) {
-        return addAgent (new SoftwareAgent (idgen ("SoftwareAgent", attributes)), true, attributes);
+        return addAgent (new SoftwareAgent (idGen ("SoftwareAgent", attributes)), true, attributes);
     }
 
     public ProvBuilder specializationOf () throws ProvBuildException {
@@ -400,7 +419,7 @@ public class ProvBuilder {
     }
 
     public ProvBuilder used (Date time, String... attributes) throws ProvBuildException {
-        store (new Used (idgen ("Used", attributes), getActivity ("used"), null, time), true, attributes);
+        store (new Used (idGenRel ("Used", attributes), getActivity ("used"), null, time), true, attributes);
         if (_prior != null) {
             if (_prior instanceof WasDerivedFrom) {
                 ((WasDerivedFrom) _prior).setUsage ((Used) _current);
@@ -415,20 +434,19 @@ public class ProvBuilder {
     }
 
     public ProvBuilder wasAssociatedWith (String... attributes) throws ProvBuildException {
-
-        return store (new WasAssociatedWith (idgen ("WasAssociatedWith", attributes), getActivity ("wasAssociatedWith"), null), true, attributes);
+        return store (new WasAssociatedWith (idGenRel ("WasAssociatedWith", attributes), getActivity ("wasAssociatedWith"), null), true, attributes);
     }
 
     public ProvBuilder wasAttributedTo (String... attributes) throws ProvBuildException {
-        return store (new WasAttributedTo (idgen ("WasAttributedTo", attributes), getEntity ("wasAttributedTo"), null), true, attributes);
+        return store (new WasAttributedTo (idGenRel ("WasAttributedTo", attributes), getEntity ("wasAttributedTo"), null), true, attributes);
     }
 
     public ProvBuilder wasDerivedFrom (String... attributes) throws ProvBuildException {
-        return store (new WasDerivedFrom (idgen ("WasDerivedFrom", attributes), getEntity ("wasDerivedFrom"), null), true, attributes);
+        return store (new WasDerivedFrom (idGenRel ("WasDerivedFrom", attributes), getEntity ("wasDerivedFrom"), null), true, attributes);
     }
 
     public ProvBuilder wasEndedBy (Date time, String... attributes) throws ProvBuildException {
-        return store (new WasEndedBy (idgen ("WasEndedBy", attributes), getActivity ("wasEndedBy"), (Entity) null, (Activity) null, time), true, attributes);
+        return store (new WasEndedBy (idGenRel ("WasEndedBy", attributes), getActivity ("wasEndedBy"), (Entity) null, (Activity) null, time), true, attributes);
     }
 
     public ProvBuilder wasEndedBy (String... attributes) throws ProvBuildException {
@@ -436,7 +454,7 @@ public class ProvBuilder {
     }
 
     public ProvBuilder wasGeneratedBy (Date time, String... attributes) throws ProvBuildException {
-        store (new WasGeneratedBy (idgen ("WasGeneratedBy", attributes), getEntity ("wasGeneratedBy"), null, time), true, attributes);
+        store (new WasGeneratedBy (idGenRel ("WasGeneratedBy", attributes), getEntity ("wasGeneratedBy"), null, time), true, attributes);
         if (_prior != null) {
             if (_prior instanceof WasDerivedFrom) {
                 ((WasDerivedFrom) _prior).setGeneration ((WasGeneratedBy) _current);
@@ -451,11 +469,11 @@ public class ProvBuilder {
     }
 
     public ProvBuilder wasInformedBy (String... attributes) throws ProvBuildException {
-        return store (new WasInformedBy (idgen ("WasInformedBy", attributes), getActivity ("wasInformedBy"), null), true, attributes);
+        return store (new WasInformedBy (idGenRel ("WasInformedBy", attributes), getActivity ("wasInformedBy"), null), true, attributes);
     }
 
     public ProvBuilder wasInvalidatedBy (Date time, String... attributes) throws ProvBuildException {
-        return store (new WasInvalidatedBy (idgen ("WasInvalidatedBy", attributes), getEntity ("wasInvalidatedBy"), (Activity) null, time), true, attributes);
+        return store (new WasInvalidatedBy (idGenRel ("WasInvalidatedBy", attributes), getEntity ("wasInvalidatedBy"), (Activity) null, time), true, attributes);
     }
 
     public ProvBuilder wasInvalidatedBy (String... attributes) throws ProvBuildException {
@@ -467,11 +485,11 @@ public class ProvBuilder {
     }
 
     public ProvBuilder wasRevisionOf (String... attributes) throws ProvBuildException {
-        return store (new WasRevisionOf (idgen ("WasRevisionOf", attributes), getEntity ("wasRevisionOf"), null), true, attributes);
+        return store (new WasRevisionOf (idGenRel ("WasRevisionOf", attributes), getEntity ("wasRevisionOf"), null), true, attributes);
     }
 
     public ProvBuilder wasStartedBy (Date time, String... attributes) throws ProvBuildException {
-        return store (new WasStartedBy (idgen ("WasStartedBy", attributes), getActivity ("wasStartedBy"), (Entity) null, (Activity) null, time), true, attributes);
+        return store (new WasStartedBy (idGenRel ("WasStartedBy", attributes), getActivity ("wasStartedBy"), (Entity) null, (Activity) null, time), true, attributes);
     }
 
     public ProvBuilder wasStartedBy (String... attributes) throws ProvBuildException {

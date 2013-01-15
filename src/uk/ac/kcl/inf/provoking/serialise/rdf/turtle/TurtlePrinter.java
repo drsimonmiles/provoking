@@ -1,6 +1,10 @@
 package uk.ac.kcl.inf.provoking.serialise.rdf.turtle;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,13 +24,21 @@ public class TurtlePrinter {
     private final RDFSerialiser _serialiser;
     private final Map<String, String> _prefixes;
 
-    public TurtlePrinter (PrintWriter output) {
-        _output = output;
+    public TurtlePrinter (Writer output) {
+        _output = new PrintWriter (output);
         _listener = new TurtlePrinterTriplesListener ();
         _serialiser = new RDFSerialiser (_listener);
         _prefixes = new HashMap<> ();
     }
 
+    public TurtlePrinter (File output) throws IOException {
+        this (new FileWriter (output));
+    }
+
+    public void close () {
+        _output.close ();
+    }
+    
     public void serialise (Document document) {
         boolean xsd = false;
 

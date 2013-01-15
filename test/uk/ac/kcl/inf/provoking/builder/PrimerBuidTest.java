@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf.provoking.builder;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +13,6 @@ import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
-import uk.ac.kcl.inf.provoking.serialise.rdf.RDFDeserialiser;
 import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
 import uk.ac.kcl.inf.provoking.serialise.rdf.turtle.TurtlePrinter;
 
@@ -46,28 +46,27 @@ public class PrimerBuidTest {
         String file1 = "test.ttl", file2 = "test2.ttl";
         JenaDeserialiser in = new JenaDeserialiser ();
         Document document;
-        PrintWriter out;
         
         b.setPrefix ("dcterms:", "http://purl.org/dc/terms/");
         b.setPrefix ("foaf:", "http://xmlns.com/foaf/0.1/");
         
         b.entity ("article", "dcterms:title=Crime rises in cities");
 
-        b.entity ("composition").wasGeneratedBy ("compositionGeneration").activity ("compose");
-        b.activity ("compose").used ("composeUsedDataSet1").entity ("dataSet1");
-        b.activity ("compose").used ("composeUsedRegionList").entity ("regionList");
+        b.entity ("composition").wasGeneratedBy ("*1").activity ("compose");
+        b.activity ("compose").used ("*2").entity ("dataSet1");
+        b.activity ("compose").used ("*3").entity ("regionList");
         b.entity ("chart1").wasGeneratedBy ().activity ("illustrate").used ().entity ("composition");
 
-        b.activity ("compose").wasAssociatedWith ("composeByDerek").
+        b.activity ("compose").wasAssociatedWith ("*4").
                 person ("derek", "foaf:givenName=Derek", "foaf:mbox=mailto:derek@example.org");
         b.activity ("illustrate").wasAssociatedWith ().person ("derek");
         b.person ("derek").actedOnBehalfOf ().organization ("chartgen", "foaf:name=Chart Generators Inc");
         b.entity ("chart1").wasAttributedTo ().person ("derek");
 
-        b.where ("compositionGeneration").role ("ex:composedData");
-        b.where ("composeUsedDataSet1").role ("ex:dataToCompose");
-        b.where ("composeUsedRegionList").role ("ex:regionsToAggregateBy");
-        b.where ("composeByDerek").role ("ex:analyst");
+        b.where ("*1").role ("ex:composedData");
+        b.where ("*2").role ("ex:dataToCompose");
+        b.where ("*3").role ("ex:regionsToAggregateBy");
+        b.where ("*4").role ("ex:analyst");
         
         b.entity ("dataSet2").wasRevisionOf ().entity ("dataSet1");
         b.entity ("chart2").wasDerivedFrom ().entity ("dataSet2");
@@ -88,15 +87,15 @@ public class PrimerBuidTest {
         
         document = b.build ();
 
-        out = new PrintWriter (new FileWriter (file1));
-        new TurtlePrinter (out).serialise (document);
-        out.close ();
+        TurtlePrinter out1 = new TurtlePrinter (new File (file1));
+        out1.serialise (document);
+        out1.close ();
         
         in.read (file1, null, Language.turtle);
         document = in.build ();
 
-        out = new PrintWriter (new FileWriter (file2));
-        new TurtlePrinter (out).serialise (document);
-        out.close ();
+        TurtlePrinter out2 = new TurtlePrinter (new File (file2));
+        out2.serialise (document);
+        out2.close ();
     }
 }
