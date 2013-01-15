@@ -70,5 +70,16 @@
     properties which you can use, check the target you are overriding in the
     nbproject/build-impl.xml file. 
 
-    -->
+ -->
+ <property name="version" value="0.1"/>
+
+ <target name="-post-jar">
+  <echo>Adding files to jar</echo>
+  <jar destfile="dist/provoking.jar" update="true">
+   <fileset dir="${basedir}">
+    <include name="license.txt"/>
+   </fileset>
+  </jar>
+  <move file="dist/provoking.jar" tofile="dist/provoking-${version}.jar"/>
+ </target>
 </project>

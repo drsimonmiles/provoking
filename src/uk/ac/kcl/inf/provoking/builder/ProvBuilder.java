@@ -233,10 +233,32 @@ public class ProvBuilder {
     }
 
     public ProvBuilder collection (String... attributes) {
+        Description bookmarked;
+
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Collection)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not a collection.");
+                }
+                return addEntity ((Collection) bookmarked, false, attributes);
+            }
+        }
         return addEntity (new Collection (idGen ("Collection", attributes)), true, attributes);
     }
         
     public ProvBuilder emptyCollection (String... attributes) {
+        Description bookmarked;
+
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof EmptyCollection)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an empty collection.");
+                }
+                return addEntity ((EmptyCollection) bookmarked, false, attributes);
+            }
+        }
         return addEntity (new EmptyCollection (idGen ("EmptyCollection", attributes)), true, attributes);
     }
 
@@ -332,14 +354,47 @@ public class ProvBuilder {
     }
 
     public ProvBuilder organization (String... attributes) {
+        Description bookmarked;
+        
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Organization)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not an organization.");
+                }
+                return addAgent ((Organization) bookmarked, false, attributes);
+            }
+        }
         return addAgent (new Organization (idGen ("Organization", attributes)), true, attributes);
     }
 
     public ProvBuilder person (String... attributes) {
+        Description bookmarked;
+        
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Person)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not a person.");
+                }
+                return addAgent ((Person) bookmarked, false, attributes);
+            }
+        }
         return addAgent (new Person (idGen ("Person", attributes)), true, attributes);
     }
 
     public ProvBuilder plan (String... attributes) {
+        Description bookmarked;
+
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Plan)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not a plan.");
+                }
+                return addEntity ((Plan) bookmarked, false, attributes);
+            }
+        }
         return addEntity (new Plan (idGen ("Plan", attributes)), true, attributes);
     }
     
@@ -390,6 +445,17 @@ public class ProvBuilder {
     }
 
     public ProvBuilder softwareAgent (String... attributes) {
+        Description bookmarked;
+        
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof SoftwareAgent)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not a software agent.");
+                }
+                return addAgent ((SoftwareAgent) bookmarked, false, attributes);
+            }
+        }
         return addAgent (new SoftwareAgent (idGen ("SoftwareAgent", attributes)), true, attributes);
     }
 
