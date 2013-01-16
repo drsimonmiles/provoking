@@ -131,9 +131,6 @@ public class RDFSerialiser {
         if (predicate.equals (Term.type.uri ())) {
             return RDF.typeURI ();
         }
-        if (predicate.equals (Term.value.uri ())) {
-            return RDF.valueURI ();
-        }
         if (predicate.equals (Term.label.uri ())) {
             return RDF.labelURI ();
         }
