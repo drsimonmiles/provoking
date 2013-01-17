@@ -24,6 +24,7 @@ import uk.ac.kcl.inf.provoking.model.WasAttributedTo;
 import uk.ac.kcl.inf.provoking.model.WasDerivedFrom;
 import uk.ac.kcl.inf.provoking.model.WasEndedBy;
 import uk.ac.kcl.inf.provoking.model.WasGeneratedBy;
+import uk.ac.kcl.inf.provoking.model.WasInfluencedBy;
 import uk.ac.kcl.inf.provoking.model.WasInformedBy;
 import uk.ac.kcl.inf.provoking.model.WasInvalidatedBy;
 import uk.ac.kcl.inf.provoking.model.WasQuotedFrom;
@@ -253,6 +254,14 @@ public class RDFSerialiser {
             }
             serialise (((WasGeneratedBy) description).getGenerated (), Term.qualifiedGeneration, description);
             serialise (description, Term.activity, ((WasGeneratedBy) description).getGenerater ());
+        }
+        if (description instanceof WasInfluencedBy) {
+            serialise (((WasInfluencedBy) description).getInfluenced (), Term.wasInfluencedBy, ((WasInfluencedBy) description).getInfluencer ());
+            if (isMinimal (description, document)) {
+                return;
+            }
+            serialise (((WasInfluencedBy) description).getInfluenced (), Term.qualifiedInfluence, description);
+            serialise (description, Term.influencer, ((WasInfluencedBy) description).getInfluencer ());
         }
         if (description instanceof WasInformedBy) {
             serialise (((WasInformedBy) description).getInformed (), Term.wasInformedBy, ((WasInformedBy) description).getInformer ());

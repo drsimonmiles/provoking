@@ -6,39 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.DatatypeConverter;
-import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
-import uk.ac.kcl.inf.provoking.model.Activity;
-import uk.ac.kcl.inf.provoking.model.Agent;
-import uk.ac.kcl.inf.provoking.model.AlternateOf;
-import uk.ac.kcl.inf.provoking.model.Bundle;
-import uk.ac.kcl.inf.provoking.model.Collection;
-import uk.ac.kcl.inf.provoking.model.Description;
-import uk.ac.kcl.inf.provoking.model.Document;
-import uk.ac.kcl.inf.provoking.model.EmptyCollection;
-import uk.ac.kcl.inf.provoking.model.Entity;
-import uk.ac.kcl.inf.provoking.model.HadMember;
-import uk.ac.kcl.inf.provoking.model.HadPrimarySource;
-import uk.ac.kcl.inf.provoking.model.Location;
-import uk.ac.kcl.inf.provoking.model.Organization;
-import uk.ac.kcl.inf.provoking.model.Person;
-import uk.ac.kcl.inf.provoking.model.Plan;
-import uk.ac.kcl.inf.provoking.model.Role;
-import uk.ac.kcl.inf.provoking.model.SoftwareAgent;
-import uk.ac.kcl.inf.provoking.model.SpecializationOf;
-import uk.ac.kcl.inf.provoking.model.Used;
-import uk.ac.kcl.inf.provoking.model.WasAssociatedWith;
-import uk.ac.kcl.inf.provoking.model.WasAttributedTo;
-import uk.ac.kcl.inf.provoking.model.WasDerivedFrom;
-import uk.ac.kcl.inf.provoking.model.WasEndedBy;
-import uk.ac.kcl.inf.provoking.model.WasGeneratedBy;
-import uk.ac.kcl.inf.provoking.model.WasInformedBy;
-import uk.ac.kcl.inf.provoking.model.WasInvalidatedBy;
-import uk.ac.kcl.inf.provoking.model.WasQuotedFrom;
-import uk.ac.kcl.inf.provoking.model.WasRevisionOf;
-import uk.ac.kcl.inf.provoking.model.WasStartedBy;
+import uk.ac.kcl.inf.provoking.model.*;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.IDGenerator;
 import uk.ac.kcl.inf.provoking.model.util.Identified;
+import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.model.util.UniqueIDGenerator;
 import uk.ac.kcl.inf.provoking.model.util.UniqueURIGenerator;
@@ -298,6 +270,13 @@ public class ProvBuilder {
         return (Entity) _current;
     }
 
+    private Influenceable getInfluenceable (String edgeType) throws ProvBuildException {
+        if (_current == null || !(_current instanceof Influenceable)) {
+            throw new ProvBuildException (edgeType + " only applies to activites, agents or entities");
+        }
+        return (Influenceable) _current;
+    }
+
     public ProvBuilder hadMember () throws ProvBuildException {
         return store (new HadMember (getEntity ("hadMember"), null), true);
     }
@@ -532,6 +511,10 @@ public class ProvBuilder {
 
     public ProvBuilder wasGeneratedBy (String... attributes) throws ProvBuildException {
         return wasGeneratedBy ((Date) null, attributes);
+    }
+
+    public ProvBuilder wasInfluencedBy (String... attributes) throws ProvBuildException {
+        return store (new WasInfluencedBy (idGenRel ("WasInfluencedBy", attributes), getInfluenceable ("wasInfluencedBy"), null), true, attributes);
     }
 
     public ProvBuilder wasInformedBy (String... attributes) throws ProvBuildException {

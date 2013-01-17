@@ -1,9 +1,10 @@
 package uk.ac.kcl.inf.provoking.model;
 
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
+import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class Agent extends AttributeHolder implements Description {
+public class Agent extends AttributeHolder implements Description, Influenceable {
     private Location _location;
 
     public Agent (Object identifier, Location location) {

@@ -10,17 +10,18 @@ public enum Term {
     Association, atLocation, atTime, Attribution, Bundle, Collection, Communication, Delegation, 
     Derivation, EmptyCollection, End, endedAtTime, 
     Entity, entity, Generation, hadGeneration, hadMember, hadPlan, hadPrimarySource, hadRole, hadUsage,
-    Invalidation, label, Location, location,
+    Influence, influencer, Invalidation, label, Location, location,
     Note, Organization,
     Person, Plan, PrimarySource, qualifiedAssociation, qualifiedAttribution, qualifiedCommunication,
-    qualifiedDelegation, qualifiedDerivation, qualifiedEnd, qualifiedGeneration,
+    qualifiedDelegation, qualifiedDerivation, qualifiedEnd, qualifiedGeneration, qualifiedInfluence,
     qualifiedInvalidation, qualifiedPrimarySource, qualifiedRevision, qualifiedQuotation, qualifiedStart, qualifiedUsage,
     Revision, Role, role, Quotation, 
     SoftwareAgent, specializationOf, Start, startedAtTime, type, Usage, used, value,
     wasAssociatedWith,
     wasAttributedTo,
     wasDerivedFrom, wasEndedBy,
-    wasGeneratedBy, wasInformedBy, wasInvalidatedBy, wasRevisionOf, wasQuotedFrom, wasStartedBy;
+    wasGeneratedBy, wasInformedBy, wasInfluencedBy, wasInvalidatedBy, 
+    wasRevisionOf, wasQuotedFrom, wasStartedBy;
     public final static String PROV_NS = "http://www.w3.org/ns/prov#";
 
     public static boolean isProvTerm (URI uri) {

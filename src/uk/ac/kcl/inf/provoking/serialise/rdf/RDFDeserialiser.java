@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import uk.ac.kcl.inf.provoking.model.*;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
-import uk.ac.kcl.inf.provoking.model.util.Identified;
+import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
 
@@ -112,6 +112,9 @@ public class RDFDeserialiser implements TriplesListener {
             case entity:
                 ProvConstructer.setEntity (description, (Entity) objectDescription);
                 return;
+            case influencer:
+                ProvConstructer.setInfluenceable (description, (Influenceable) objectDescription);
+                return;
             case location:
             case atLocation:
                 ProvConstructer.setLocation (description, (Location) objectDescription);
@@ -135,6 +138,7 @@ public class RDFDeserialiser implements TriplesListener {
             case qualifiedCommunication:
             case qualifiedDelegation:
             case qualifiedDerivation:
+            case qualifiedInfluence:
             case qualifiedPrimarySource:
             case qualifiedRevision:
             case qualifiedQuotation:

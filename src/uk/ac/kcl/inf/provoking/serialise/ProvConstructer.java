@@ -2,6 +2,7 @@ package uk.ac.kcl.inf.provoking.serialise;
 
 import java.net.URI;
 import uk.ac.kcl.inf.provoking.model.*;
+import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 import static uk.ac.kcl.inf.provoking.model.util.Term.*;
 
@@ -77,6 +78,9 @@ public class ProvConstructer {
             case wasStartedBy:
             case Start:
                 return new WasStartedBy (identifier, null, null, null, null);
+            case wasInfluencedBy:
+            case Influence:
+                return new WasInfluencedBy (identifier, null, null);
             default:
                 return null;
         }
@@ -124,6 +128,8 @@ public class ProvConstructer {
                 return new WasQuotedFrom ((Entity) subject, (Entity) object);
             case wasStartedBy:
                 return new WasStartedBy ((Activity) subject, (Entity) object);
+            case wasInfluencedBy:
+                return new WasInfluencedBy ((Influenceable) subject, (Influenceable) object);
             default:
                 return null;
         }
@@ -258,6 +264,9 @@ public class ProvConstructer {
         if (description instanceof WasInformedBy) {
             ((WasInformedBy) description).setInformer (activity);
         }
+        if (description instanceof WasInfluencedBy) {
+            ((WasInfluencedBy) description).setInfluencer (activity);
+        }
         if (description instanceof WasInvalidatedBy) {
             ((WasInvalidatedBy) description).setInvalidater (activity);
         }
@@ -272,6 +281,9 @@ public class ProvConstructer {
         }
         if (description instanceof WasAttributedTo) {
             ((WasAttributedTo) description).setAttributedTo (agent);
+        }
+        if (description instanceof WasInfluencedBy) {
+            ((WasInfluencedBy) description).setInfluencer (agent);
         }
     }
 
@@ -299,6 +311,15 @@ public class ProvConstructer {
         }
         if (description instanceof WasStartedBy) {
             ((WasStartedBy) description).setTrigger (entity);
+        }
+        if (description instanceof WasInfluencedBy) {
+            ((WasInfluencedBy) description).setInfluencer (entity);
+        }
+    }
+
+    public static void setInfluenceable (Description description, Influenceable influenceable) {
+        if (description instanceof WasInfluencedBy) {
+            ((WasInfluencedBy) description).setInfluencer (influenceable);
         }
     }
 
