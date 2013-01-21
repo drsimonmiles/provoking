@@ -203,6 +203,21 @@ public class ProvBuilder {
     public Bundle buildBundle (Object identifier) {
         return new Bundle (identifier, _document);
     }
+    
+    public ProvBuilder bundle (String... attributes) {
+        Description bookmarked;
+
+        if (attributes.length >= 1) {
+            bookmarked = _bookmarks.get (attributes[0]);
+            if (bookmarked != null) {
+                if (!(bookmarked instanceof Bundle)) {
+                    throw new ProvBuildException ("Bookmark reference " + attributes[0] + " is not a bundle.");
+                }
+                return addEntity ((Bundle) bookmarked, false, attributes);
+            }
+        }
+        return addEntity (new Bundle (idGen ("Bundle", attributes)), true, attributes);
+    }
 
     public ProvBuilder collection (String... attributes) {
         Description bookmarked;
@@ -294,6 +309,10 @@ public class ProvBuilder {
         return this;
     }
 
+    public ProvBuilder idAbbr (String identifierAbbreviation) throws ProvBuildException {
+        return id (resolve (identifierAbbreviation));
+    }
+    
     private Object idGen (String descriptive, String... attributes) {
         for (String attribute : attributes) {
             if (attribute.indexOf ('=') < 0 && !attribute.startsWith ("*")) {

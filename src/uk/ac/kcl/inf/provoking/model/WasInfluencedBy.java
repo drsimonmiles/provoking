@@ -8,31 +8,31 @@ public class WasInfluencedBy extends AttributeHolder implements Description {
     private Influenceable _influencer;
     private Influenceable _influenced;
     
-    public WasInfluencedBy (Influenceable informed, Influenceable informer) {
-        _influencer = informed;
-        _influenced = informer;
+    public WasInfluencedBy (Influenceable influenced, Influenceable influencer) {
+        _influenced = influenced;
+        _influencer = influencer;
     }
 
-    public WasInfluencedBy (Object identifier, Influenceable informed, Influenceable informer) {
+    public WasInfluencedBy (Object identifier, Influenceable influenced, Influenceable influencer) {
         super (identifier);
-        _influencer = informed;
-        _influenced = informer;
+        _influencer = influencer;
+        _influenced = influenced;
     }
 
     public Influenceable getInfluenced () {
         return _influenced;
     }
 
-    public void setInfluenced (Influenceable informed) {
-        _influencer = informed;
+    public void setInfluenced (Influenceable influenced) {
+        _influenced = influenced;
     }
 
     public Influenceable getInfluencer () {
         return _influencer;
     }
 
-    public void setInfluencer (Influenceable informer) {
-        _influenced = informer;
+    public void setInfluencer (Influenceable influencer) {
+        _influencer = influencer;
     }
 
     public static WasInfluencedBy reference (Object identifier) {

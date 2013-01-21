@@ -279,6 +279,9 @@ public class ProvConstructer {
         if (description instanceof ActedOnBehalfOf) {
             ((ActedOnBehalfOf) description).setOnBehalfOf (agent);
         }
+        if (description instanceof WasAssociatedWith) {
+            ((WasAssociatedWith) description).setResponsible (agent);
+        }
         if (description instanceof WasAttributedTo) {
             ((WasAttributedTo) description).setAttributedTo (agent);
         }
