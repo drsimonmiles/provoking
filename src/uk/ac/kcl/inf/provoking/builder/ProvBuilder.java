@@ -18,6 +18,11 @@ import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 import static uk.ac.kcl.inf.provoking.serialise.SerialisationHintType.*;
 
+/**
+ * A builder for iteratively and succinctly creating PROV documents.
+ * 
+ * @author Simon Miles
+ */
 public class ProvBuilder {
     private Document _document;
     private Description _current, _prior;
@@ -54,9 +59,9 @@ public class ProvBuilder {
         this (new UniqueIDGenerator (idStart));
     }
 
-    public ProvBuilder (String prefix, String idVocabulary) {
-        this (new UniqueURIGenerator (idVocabulary));
-        setPrefix (prefix, idVocabulary);
+    public ProvBuilder (String prefix, String idURIBase) {
+        this (new UniqueURIGenerator (idURIBase));
+        setPrefix (prefix, idURIBase);
     }
 
     public ProvBuilder (Document addToExisting) {
