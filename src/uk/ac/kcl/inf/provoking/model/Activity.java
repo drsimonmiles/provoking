@@ -19,6 +19,7 @@ public class Activity extends AttributeHolder implements Description, Influencea
         super (identifier);
         _startedAt = startedAt;
         _endedAt = endedAt;
+        _location = location;
     }
 
     public Activity (Object identifier, Date startedAt, Date endedAt) {

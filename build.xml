@@ -71,7 +71,7 @@
     nbproject/build-impl.xml file. 
 
  -->
- <property name="version" value="0.1.1"/>
+ <property name="version" value="0.1.2"/>
 
  <target name="-post-jar">
   <echo>Adding files to jar</echo>
