@@ -339,20 +339,27 @@ public class ProvBuilder {
         }
     }
 
+    /**
+     * Set the location of the activity, agent, entity or event just built.
+     * 
+     * @param id The location string (possibly an abbreviation such as a resolveable qualified name)
+     * @param attributes The attributes to annotate to the location
+     * @return This builder
+     */
     public ProvBuilder location (String id, String... attributes) {
         Description bookmarked;
         Location newLocation;
 
         bookmarked = _bookmarks.get (id);
         if (bookmarked != null) {
-            if (!(bookmarked instanceof Role)) {
-                throw new ProvBuildException ("Reference " + id + " is not a role.");
+            if (!(bookmarked instanceof Location)) {
+                throw new ProvBuildException ("Reference " + id + " is not a location.");
             }
             return addLocation ((Location) bookmarked, false, attributes);
         }
         newLocation = new Location (resolve (id));
         _bookmarks.put (id, newLocation);
-        
+
         return addLocation (newLocation, true, attributes);
     }
 
