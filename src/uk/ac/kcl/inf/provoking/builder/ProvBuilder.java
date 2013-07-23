@@ -352,6 +352,17 @@ public class ProvBuilder {
         return addEntity (new Entity (idGen ("Entity", attributes)), true, attributes);
     }
 
+    /**
+     * Returns the PROV description (entity, activity, ...) previously given a
+     * bookmark in building.
+     * 
+     * @param bookmark The bookmark of the PROV description object to retrieve
+     * @return The PROV description object referred to by the bookmark, or null if none exists
+     */
+    public Description getBookmarked (String bookmark) {
+        return _bookmarks.get (bookmark);
+    }
+    
     private Activity getActivity (String edgeType) throws ProvBuildException {
         if (_current == null || !(_current instanceof Activity)) {
             throw new ProvBuildException (edgeType + " only applies to activities");
@@ -388,6 +399,20 @@ public class ProvBuilder {
         return store (new HadPrimarySource (idGenRel ("HadPrimarySource", attributes), getEntity ("hadPrimarySource"), null), true);
     }
 
+    /**
+     * Set the ID of the description currently being built to be exactly the 
+     * object passed as parameter. The identifier object is not changed in any
+     * way, so no abbreviations are resolved if it is a String, and it is not
+     * converted to a URI if it is a resolveable String.
+     * 
+     * For example:
+     *   b.entity ("myEntity").id ("myEntity'sIDString");
+     *   b.entity ("myEntity").id (new URI ("http://www.example.com/1"));
+     * 
+     * @param identifier The object to be set as ID for the currently built description.
+     * @return This builder.
+     * @throws ProvBuildException If the currently built description is not one that can take an identifier.
+     */
     public ProvBuilder id (Object identifier) throws ProvBuildException {
         if (_current == null || !(_current instanceof Identified)) {
             throw new ProvBuildException ("IDs can only be applied to identifiable descriptions: " + identifier);
@@ -397,6 +422,19 @@ public class ProvBuilder {
         return this;
     }
 
+    /**
+     * Set the ID of the description currently being built to be the string
+     * parameter or, if the string is an abbreviation, the resolved object that
+     * the string represents, e.g. a URI.
+     * 
+     * For example:
+     *   b.entity ("myEntity").id ("http://www.example.com/1");
+     * will set the entity's ID to be a URI object suitable for serialisation to RDF.
+     * 
+     * @param identifier The object to be set as ID for the currently built description.
+     * @return This builder.
+     * @throws ProvBuildException If the currently built description is not one that can take an identifier.
+     */
     public ProvBuilder idAbbr (String identifierAbbreviation) throws ProvBuildException {
         return id (resolve (identifierAbbreviation));
     }
@@ -422,20 +460,27 @@ public class ProvBuilder {
         }
     }
 
+    /**
+     * Set the location of the activity, agent, entity or event just built.
+     * 
+     * @param id The location string (possibly an abbreviation such as a resolveable qualified name)
+     * @param attributes The attributes to annotate to the location
+     * @return This builder
+     */
     public ProvBuilder location (String id, String... attributes) {
         Description bookmarked;
         Location newLocation;
 
         bookmarked = _bookmarks.get (id);
         if (bookmarked != null) {
-            if (!(bookmarked instanceof Role)) {
-                throw new ProvBuildException ("Reference " + id + " is not a role.");
+            if (!(bookmarked instanceof Location)) {
+                throw new ProvBuildException ("Reference " + id + " is not a location.");
             }
             return addLocation ((Location) bookmarked, false, attributes);
         }
         newLocation = new Location (resolve (id));
         _bookmarks.put (id, newLocation);
-        
+
         return addLocation (newLocation, true, attributes);
     }
 
