@@ -2,6 +2,12 @@ package uk.ac.kcl.inf.provoking.model.util;
 
 import uk.ac.kcl.inf.provoking.model.Description;
 
+/**
+ * Superclass for all PROV descriptions that can have an identifier.
+ * An identifier may be any Object, and is optional (null if not present).
+ * 
+ * @author Simon Miles
+ */
 public abstract class Identified implements Description {
     private Object _identifier;
     private boolean _isReference;
