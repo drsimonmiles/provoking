@@ -21,17 +21,68 @@ import static uk.ac.kcl.inf.provoking.serialise.SerialisationHintType.*;
 /**
  * A builder for iteratively and succinctly creating PROV documents.
  * 
+ * By default, all builders resolve strings starting with "prov:" to a URI
+ * in the PROV namespace, and also resolve strings starting "http:", "mailto:"
+ * or "urn:" to URI objects. Other prefixes can be registered using setPrefix,
+ * other URI schemes registered with recogniseURIScheme, and abbreviation
+ * resolvers in general registered with addResolver.
+ * 
  * @author Simon Miles
  */
 public class ProvBuilder {
+    /**
+     * The document currently being built;
+     */
     private Document _document;
+    /**
+     * The current description that more information will be added to, and the previously current description.
+     */
     private Description _current, _prior;
+    /**
+     * The abbreviation resolvers applied to text such as attribute values during building.
+     */
     private List<AbbreviationResolver> _resolvers;
+    /**
+     * For each bookmark string declared by the user in building, this maps to the description bookmarked.
+     */
     private Map<String, Description> _bookmarks;
+    /**
+     * The generator used for new description identifiers.
+     */
     private IDGenerator _idgen;
+    /**
+     * If true, descriptions' bookmarks will also be added to the document as prov:labels, so that they appear in visualisations.
+     */
     private boolean _bookmarksAsLabels;
+    /**
+     * If true, relations (as well as activities, entities etc.) will be given newly created identifiers.
+     */
     private boolean _nameRelations;
 
+    /**
+     * Create a builder that adds descriptions to an new document, and
+     * generates new URI identifiers using a UniqueURIGenerator, with every identifier
+     * starting with a given base URI. Additionally, a prefix is registered that
+     * resolves to the base URI, so any text given during building that begins
+     * with the prefix is resolved to a URI starting with the base URI. An example is given below.
+     * 
+     * ProvBuilder b = new ProvBuilder ("ex:", "http://www.inf.kcl.ac.uk/staff/simonm/provoking#");
+     * 
+     * @param prefix A prefix registered to resolve to the given base URI.
+     * @param idURIBase The starting string for all URI identifiers.
+     */
+    public ProvBuilder (String prefix, String idURIBase) {
+        this (new UniqueURIGenerator (idURIBase));
+        setPrefix (prefix, idURIBase);
+    }
+    
+    /**
+     * Create a builder that will add new descriptions to an existing document,
+     * and use the given generator to create identifiers where none are explicitly given.
+     * 
+     * @param addToExisting The document to add descriptions to.
+     * @param idgen The generator for new identifiers.
+     */
     public ProvBuilder (Document addToExisting, IDGenerator idgen) {
         _document = addToExisting;
         _current = null;
@@ -47,27 +98,59 @@ public class ProvBuilder {
         recogniseURIScheme ("urn");
     }
 
+    /**
+     * Create a builder that will build a new PROV document, using the identifier
+     * generator given where identifiers are not stated explicitly.
+     * 
+     * @param idgen The generator for new identifiers.
+     */
     public ProvBuilder (IDGenerator idgen) {
         this (new Document (), idgen);
     }
 
-    public ProvBuilder (Document addToExisting, String idStart) {
-        this (addToExisting, new UniqueIDGenerator (idStart));
+    /**
+     * Create a builder that adds descriptions to an existing document, and
+     * generates new String identifiers using a UniqueIDGenerator, with every identifier
+     * starting with a given base string.
+     * 
+     * @param addToExisting The document to add descriptions to.
+     * @param base The starting string for all identifier strings.
+     */
+    public ProvBuilder (Document addToExisting, String base) {
+        this (addToExisting, new UniqueIDGenerator (base));
     }
 
-    public ProvBuilder (String idStart) {
-        this (new UniqueIDGenerator (idStart));
+    /**
+     * Create a builder that adds descriptions to an new document, and
+     * generates new String identifiers using a UniqueIDGenerator, with every identifier
+     * starting with a given base string.
+     * 
+     * @param base The starting string for all identifier strings.
+     */
+    public ProvBuilder (String base) {
+        this (new UniqueIDGenerator (base));
     }
 
-    public ProvBuilder (String prefix, String idURIBase) {
-        this (new UniqueURIGenerator (idURIBase));
-        setPrefix (prefix, idURIBase);
-    }
-
+    /**
+     * Creates a builder to add descriptions to an existing document, where
+     * all identifiers will be made explicit so need no generator.
+     * 
+     * If any
+     * identifiers are generated, they will be Strings with an empty base (starting string).
+     * 
+     * @param addToExisting The document to add descriptions to.
+     */
     public ProvBuilder (Document addToExisting) {
         this (addToExisting, "");
     }
 
+    /**
+     * Creates a builder to add descriptions to a new document, where
+     * all identifiers will be made explicit so need no generator.
+     * 
+     * If any
+     * identifiers are generated, they will be Strings with an empty base (starting string).
+     */
     public ProvBuilder () {
         this ("");
     }
