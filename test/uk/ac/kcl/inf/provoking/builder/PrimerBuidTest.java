@@ -33,11 +33,7 @@ public class PrimerBuidTest {
     @After
     public void tearDown () {
     }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+
     @Test
     public void buildPrimer () throws IOException, DeserialisationException {
         ProvBuilder b = new ProvBuilder ("ex:", "http://www.inf.kcl.ac.uk/staff/simonm/provoking#");

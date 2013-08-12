@@ -29,7 +29,7 @@ public class ActedOnBehalfOf extends AttributeHolder implements Description {
     public ActedOnBehalfOf (Object identifier, Agent acter, Agent onBehalfOf) {
         this (identifier, acter, onBehalfOf, null);
     }
-
+    
     public Agent getActer () {
         return _acter;
     }

@@ -8,7 +8,10 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.FileManager;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import uk.ac.kcl.inf.provoking.model.Document;
@@ -64,15 +67,19 @@ public class JenaDeserialiser {
     }
     
     public void read (String fileNameOrURI, String baseURI, Language language) throws DeserialisationException {
-        Model model = ModelFactory.createDefaultModel ();
-        InputStream in = FileManager.get ().open (fileNameOrURI);
+        read (FileManager.get ().open (fileNameOrURI), baseURI, language);
+    }
 
-        if (in == null) {
-            throw new DeserialisationException ("File/URI " + fileNameOrURI + " not found");
-        }
+    public void read (InputStream in, String baseURI, Language language) throws DeserialisationException {
+        Model model = ModelFactory.createDefaultModel ();
+
         model.read (in, baseURI, getLanguageName (language));
         deserialise (model);
         model.close ();
+    }
+    
+    public void readString (String rdfString, String baseURI, Language language) throws DeserialisationException, UnsupportedEncodingException {
+        read (new ByteArrayInputStream (rdfString.getBytes ("UTF-8")), baseURI, language);
     }
     
     private String blank (RDFNode blankNode) {

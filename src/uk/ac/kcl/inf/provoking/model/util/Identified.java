@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
+import java.util.Objects;
 import uk.ac.kcl.inf.provoking.model.Description;
 
 /**
@@ -21,7 +22,7 @@ public abstract class Identified implements Description {
         _identifier = identifier;
         _isReference = false;
     }
-
+    
     public abstract Term[] getClassTerms ();
     
     public Object getIdentifier () {

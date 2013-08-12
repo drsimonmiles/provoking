@@ -15,16 +15,16 @@ public abstract class AttributeHolder extends Identified {
         super (identifier);
         _attributes = new HashSet<> ();
     }
-    
+
     public void addAttribute (Attribute attribute) {
         checkAttributesAllowed ();
-        
+
         _attributes.add (attribute);
     }
 
     public void addAttribute (Object key, Object value) {
         checkAttributesAllowed ();
-        
+
         addAttribute (new Attribute (key, value));
     }
 
@@ -33,16 +33,16 @@ public abstract class AttributeHolder extends Identified {
             throw new UnsupportedOperationException ("No attributes allowed on this type");
         }
     }
-    
+
     public Set<Attribute> getAttributes () {
         checkAttributesAllowed ();
-        
+
         return _attributes;
     }
-    
+
     public Object getAttributeValue (Object key) {
         checkAttributesAllowed ();
-        
+
         Set<Object> all = getAllAttributeValues (key);
 
         if (all.isEmpty ()) {
@@ -54,7 +54,7 @@ public abstract class AttributeHolder extends Identified {
 
     public Set<Object> getAllAttributeValues (Object key) {
         checkAttributesAllowed ();
-        
+
         Set<Object> values = new HashSet<> ();
 
         for (Attribute attribute : getAllAttributes (key)) {
@@ -66,7 +66,7 @@ public abstract class AttributeHolder extends Identified {
 
     public Set<Attribute> getAllAttributes (Object key) {
         checkAttributesAllowed ();
-        
+
         Set<Attribute> found = new HashSet<> ();
 
         for (Attribute attribute : _attributes) {
@@ -77,14 +77,14 @@ public abstract class AttributeHolder extends Identified {
 
         return found;
     }
-    
+
     public boolean hasAttributes () {
         return !_attributes.isEmpty ();
     }
-    
+
     public void removeAttributes (Object key) {
         checkAttributesAllowed ();
-        
+
         Set<Attribute> toRemove = new HashSet<> ();
 
         for (Attribute attribute : _attributes) {
@@ -97,10 +97,10 @@ public abstract class AttributeHolder extends Identified {
 
     public void removeAttribute (Attribute attribute) {
         checkAttributesAllowed ();
-        
+
         _attributes.remove (attribute);
     }
-    
+
     public void subtype (Term type) {
         addAttribute (Term.type.uri (), type.uri ());
     }
