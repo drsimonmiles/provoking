@@ -27,7 +27,7 @@ public class JenaDeserialiser {
         _deserialiser = new RDFDeserialiser ();
     }
     
-    public Document build () {
+    public Document build () throws DeserialisationException {
         return _deserialiser.build ();
     }
     

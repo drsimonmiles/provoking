@@ -5,6 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 import uk.ac.kcl.inf.provoking.model.Description;
 
+/**
+ * Stores data from a set of triples with the same subject. Once this subject
+ * has been deserialised to a PROV model description, this description is also
+ * stored.
+ * 
+ * @author Simon Miles
+ */
 class SingleDescriptionTriples implements Description {
     private final URI _subjectURI;
     private final String _subjectBlank;
@@ -80,20 +87,14 @@ class SingleDescriptionTriples implements Description {
         return _subjectURI;
     }
 
-    Object getObject (URI predicate) {
-        List<URI> uris = getURIObjects (predicate);
-        if (!uris.isEmpty ()) {
-            return uris.get (0);
-        }
-        List<String> blanks = getBlankObjects (predicate);
-        if (!blanks.isEmpty ()) {
-            return blanks.get (0);
-        }
-        List<Literal> literals = getLiteralObjects (predicate);
-        if (!literals.isEmpty ()) {
-            return literals.get (0);
-        }
-        return null;
+    List<Object> getObjects (URI predicate) {
+        List<Object> objects = new LinkedList<> ();
+        
+        objects.addAll (getURIObjects (predicate));
+        objects.addAll (getBlankObjects (predicate));
+        objects.addAll (getLiteralObjects (predicate));
+
+        return objects;
     }
     
     List<URI> getPredicates () {

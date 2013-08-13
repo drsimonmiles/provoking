@@ -7,6 +7,22 @@ import uk.ac.kcl.inf.provoking.model.util.Term;
 import static uk.ac.kcl.inf.provoking.model.util.Term.*;
 
 public class ProvConstructer {
+    public static Activity activity (Object object, String position, String line) throws DeserialisationException {
+        if (object instanceof Activity) {
+            return (Activity) object;
+        } else {
+            throw new DeserialisationException ("Activity " + position + " expected " + line + ", but found " + object.getClass ().getSimpleName ());
+        }
+    }
+
+    public static Agent agent (Object object, String position, String line) throws DeserialisationException {
+        if (object instanceof Agent) {
+            return (Agent) object;
+        } else {
+            throw new DeserialisationException ("Agent " + position + " expected " + line + ", but found " + object.getClass ().getSimpleName ());
+        }
+    }
+    
     public static Description create (Term term, Object identifier) {
         switch (term) {
             case actedOnBehalfOf:
@@ -93,11 +109,11 @@ public class ProvConstructer {
     public static Description create (URI type) {
         return create (type, null);
     }
-
-    public static Description createBinary (Term relation, Object subject, Object object) {
+    
+    public static Description createBinary (Term relation, Object subject, Object object, String line) throws DeserialisationException {
         switch (relation) {
             case alternateOf:
-                return new AlternateOf ((Entity) subject, (Entity) object);
+                return new AlternateOf (entity (subject, "subject", line), entity (subject, "object", line));
             case specializationOf:
                 return new SpecializationOf ((Entity) subject, (Entity) object);
             case hadMember:
@@ -135,6 +151,14 @@ public class ProvConstructer {
         }
     }
     
+    public static Entity entity (Object object, String position, String line) throws DeserialisationException {
+        if (object instanceof Entity) {
+            return (Entity) object;
+        } else {
+            throw new DeserialisationException ("Entity " + position + " expected " + line + ", but found " + object.getClass ().getSimpleName ());
+        }
+    }
+
     public static Term getDomain (Term relation) {
         switch (relation) {
             case actedOnBehalfOf:

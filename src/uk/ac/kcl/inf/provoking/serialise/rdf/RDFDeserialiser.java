@@ -10,8 +10,19 @@ import uk.ac.kcl.inf.provoking.model.*;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
+import static uk.ac.kcl.inf.provoking.model.util.Term.label;
+import static uk.ac.kcl.inf.provoking.model.util.Term.type;
+import static uk.ac.kcl.inf.provoking.model.util.Term.value;
+import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
 
+/**
+ * Implements a TriplesListener, receiving triples read in from some source and
+ * storing them ready for deserialisation. Once reading is complete, a PROV
+ * document can be built from the stored triples data.
+ *
+ * @author Simon Miles
+ */
 public class RDFDeserialiser implements TriplesListener {
     private Map<Object, SingleDescriptionTriples> _buffered;
 
@@ -19,7 +30,7 @@ public class RDFDeserialiser implements TriplesListener {
         _buffered = new HashMap<> ();
     }
 
-    public Document build () {
+    public Document build () throws DeserialisationException {
         Document document = new Document ();
         List<Description> additional = new LinkedList<> ();
         Description description;
@@ -35,7 +46,7 @@ public class RDFDeserialiser implements TriplesListener {
         return document;
     }
 
-    private Description deserialise (SingleDescriptionTriples buffer, List<Description> additional) {
+    private Description deserialise (SingleDescriptionTriples buffer, List<Description> additional) throws DeserialisationException {
         if (buffer.hasBeenDeserialised ()) {
             return buffer.getDeserialisation ();
         }
@@ -69,91 +80,100 @@ public class RDFDeserialiser implements TriplesListener {
         return description;
     }
 
-    private void deserialise (URI predicate, SingleDescriptionTriples buffer, Description description, List<Description> additional) {
+    /**
+     * Deserialise all the triples with a given subject (already deserialised)
+     * and predicate. Sets the deserialised information as properties of the
+     * deserialised subject. The exception to this are binary PROV relations,
+     * which are added to a separate list, as they are not modelled as
+     * properties of the deserialised subject.
+     *
+     * @param predicate The predicate of the triples to deserialise.
+     * @param buffer The triples belonging to the given subject.
+     * @param description The deserialised subject.
+     * @param additional If the predicate is a binary PROV releation, this list
+     * collects the deserialised relations.
+     */
+    private void deserialise (URI predicate, SingleDescriptionTriples buffer, Description description, List<Description> additional) throws DeserialisationException {
         Term relation = Term.toTerm (predicate);
-        Object objectKey;
         SingleDescriptionTriples objectBuffer;
         Description objectDescription, newDescription;
+        String line;
 
-        // Some relations may occur multiple times, with multiple object values
-        switch (relation) {
-            case label:
-            case value:
-            case type:
-                for (Literal label : buffer.getLiteralObjects (predicate)) {
-                    ((AttributeHolder) description).addAttribute (predicate, label._value);
-                }
-                return;
-        }
-        // All following should have only one object value
-        objectKey = buffer.getObject (predicate);
-        switch (relation) {
-            case endedAtTime:
-                ((Activity) description).setEndedAt ((Date) ((Literal) objectKey)._value);
-                return;
-            case startedAtTime:
-                ((Activity) description).setEndedAt ((Date) ((Literal) objectKey)._value);
-                return;
-            case atTime:
-                ((InstantaneousEvent) description).setTime ((Date) ((Literal) objectKey)._value);
-                return;
-        }
-        // All following should have other descriptions as their object values
-        objectBuffer = _buffered.get (objectKey);
-        objectDescription = deserialise (objectBuffer, additional);
-        switch (relation) {
-            // Some relations set values on the subject descriptions
-            case activity:
-                ProvConstructer.setActivity (description, (Activity) objectDescription);
-                return;
-            case agent:
-                ProvConstructer.setAgent (description, (Agent) objectDescription);
-                return;
-            case entity:
-                ProvConstructer.setEntity (description, (Entity) objectDescription);
-                return;
-            case influencer:
-                ProvConstructer.setInfluenceable (description, (Influenceable) objectDescription);
-                return;
-            case location:
-            case atLocation:
-                ProvConstructer.setLocation (description, (Location) objectDescription);
-                return;
-            case role:
-            case hadRole:
-                ProvConstructer.setRole (description, (Role) objectDescription);
-                return;
-            case hadGeneration:
-                ((WasDerivedFrom) description).setGeneration ((WasGeneratedBy) objectDescription);
-                return;
-            case hadUsage:
-                ((WasDerivedFrom) description).setUsage ((Used) objectDescription);
-                return;
-            case hadPlan:
-                ((WasAssociatedWith) description).setPlan ((Entity) objectDescription);
-                return;
-            // Qualified relations set values on the object descriptions
-            case qualifiedAssociation:
-            case qualifiedAttribution:
-            case qualifiedCommunication:
-            case qualifiedDelegation:
-            case qualifiedDerivation:
-            case qualifiedInfluence:
-            case qualifiedPrimarySource:
-            case qualifiedRevision:
-            case qualifiedQuotation:
-            case qualifiedEnd:
-            case qualifiedGeneration:
-            case qualifiedInvalidation:
-            case qualifiedStart:
-            case qualifiedUsage:
-                ProvConstructer.setSubject (objectDescription, description);
-                return;
-        }
-        // Binary relations require additional descriptions for which there are not necessarily a subject ID
-        newDescription = ProvConstructer.createBinary (relation, description, objectDescription);
-        if (newDescription != null) {
-            additional.add (newDescription);
+        for (Object objectKey : buffer.getObjects (predicate)) {
+            line = "(" + buffer.getSubject () + " " + predicate + " " + objectKey + ")";
+            switch (relation) {
+                case label:
+                case value:
+                case type:
+                    ((AttributeHolder) description).addAttribute (predicate, ((Literal) objectKey)._value);
+                    continue;
+                case endedAtTime:
+                    ((Activity) description).setEndedAt ((Date) ((Literal) objectKey)._value);
+                    continue;
+                case startedAtTime:
+                    ((Activity) description).setEndedAt ((Date) ((Literal) objectKey)._value);
+                    continue;
+                case atTime:
+                    ((InstantaneousEvent) description).setTime ((Date) ((Literal) objectKey)._value);
+                    continue;
+            }
+            // All following should have other descriptions as their object values
+            objectBuffer = _buffered.get (objectKey);
+            objectDescription = deserialise (objectBuffer, additional);
+            switch (relation) {
+                // Some relations set values on the subject descriptions
+                case activity:
+                    ProvConstructer.setActivity (description, (Activity) objectDescription);
+                    continue;
+                case agent:
+                    ProvConstructer.setAgent (description, (Agent) objectDescription);
+                    continue;
+                case entity:
+                    ProvConstructer.setEntity (description, ProvConstructer.entity (objectDescription, "object", line));
+                    continue;
+                case influencer:
+                    ProvConstructer.setInfluenceable (description, (Influenceable) objectDescription);
+                    continue;
+                case location:
+                case atLocation:
+                    ProvConstructer.setLocation (description, (Location) objectDescription);
+                    continue;
+                case role:
+                case hadRole:
+                    ProvConstructer.setRole (description, (Role) objectDescription);
+                    continue;
+                case hadGeneration:
+                    ((WasDerivedFrom) description).setGeneration ((WasGeneratedBy) objectDescription);
+                    continue;
+                case hadUsage:
+                    ((WasDerivedFrom) description).setUsage ((Used) objectDescription);
+                    continue;
+                case hadPlan:
+                    ((WasAssociatedWith) description).setPlan ((Entity) objectDescription);
+                    continue;
+                // Qualified relations set values on the object descriptions
+                case qualifiedAssociation:
+                case qualifiedAttribution:
+                case qualifiedCommunication:
+                case qualifiedDelegation:
+                case qualifiedDerivation:
+                case qualifiedInfluence:
+                case qualifiedPrimarySource:
+                case qualifiedRevision:
+                case qualifiedQuotation:
+                case qualifiedEnd:
+                case qualifiedGeneration:
+                case qualifiedInvalidation:
+                case qualifiedStart:
+                case qualifiedUsage:
+                    ProvConstructer.setSubject (objectDescription, description);
+                    continue;
+            }
+            // Binary relations require additional descriptions for which there is not necessarily a subject ID
+            newDescription = ProvConstructer.createBinary (relation, description, objectDescription, line);
+            if (newDescription != null) {
+                additional.add (newDescription);
+            }
         }
     }
 
@@ -167,11 +187,11 @@ public class RDFDeserialiser implements TriplesListener {
 
         return buffer;
     }
-    
+
     private URI getImpliedType (Object subject) {
         SingleDescriptionTriples subjectBuffer = _buffered.get (subject);
         Term type;
-        
+
         if (subjectBuffer != null) {
             for (URI predicate : subjectBuffer.getPredicates ()) {
                 if (Term.isProvTerm (predicate)) {
