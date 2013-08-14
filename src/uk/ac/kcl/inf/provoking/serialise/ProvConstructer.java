@@ -11,7 +11,7 @@ public class ProvConstructer {
         if (object instanceof Activity) {
             return (Activity) object;
         } else {
-            throw new DeserialisationException ("Activity " + position + " expected " + line + ", but found " + object.getClass ().getSimpleName ());
+            throw new DeserialisationException ("Activity " + position + " expected, but found " + object.getClass ().getSimpleName () + " in " + line);
         }
     }
 
@@ -19,7 +19,7 @@ public class ProvConstructer {
         if (object instanceof Agent) {
             return (Agent) object;
         } else {
-            throw new DeserialisationException ("Agent " + position + " expected " + line + ", but found " + object.getClass ().getSimpleName ());
+            throw new DeserialisationException ("Agent " + position + " expected, but found " + object.getClass ().getSimpleName () + " in " + line);
         }
     }
     
@@ -111,39 +111,83 @@ public class ProvConstructer {
     }
     
     public static Description createBinary (Term relation, Object subject, Object object, String line) throws DeserialisationException {
+        Entity entitySubject = null, entityObject = null;
+        Activity activitySubject = null, activityObject = null;
+        Agent agentSubject = null, agentObject = null;
+        
         switch (relation) {
             case alternateOf:
-                return new AlternateOf (entity (subject, "subject", line), entity (subject, "object", line));
             case specializationOf:
-                return new SpecializationOf ((Entity) subject, (Entity) object);
             case hadMember:
-                return new HadMember ((Entity) subject, (Entity) object);
-            case actedOnBehalfOf:
-                return new ActedOnBehalfOf ((Agent) subject, (Agent) object);
             case hadPrimarySource:
-                return new HadPrimarySource ((Entity) subject, (Entity) object);
-            case used:
-                return new Used ((Activity) subject, (Entity) object);
-            case wasAssociatedWith:
-                return new WasAssociatedWith ((Activity) subject, (Agent) object);
-            case wasAttributedTo:
-                return new WasAttributedTo ((Entity) subject, (Agent) object);
             case wasDerivedFrom:
-                return new WasDerivedFrom ((Entity) subject, (Entity) object);
-            case wasEndedBy:
-                return new WasEndedBy ((Activity) subject, (Entity) object);
-            case wasGeneratedBy:
-                return new WasGeneratedBy ((Entity) subject, (Activity) object);
-            case wasInformedBy:
-                return new WasInformedBy ((Activity) subject, (Activity) object);
-            case wasInvalidatedBy:
-                return new WasInvalidatedBy ((Entity) subject, (Activity) object);
             case wasRevisionOf:
-                return new WasRevisionOf ((Entity) subject, (Entity) object);
             case wasQuotedFrom:
-                return new WasQuotedFrom ((Entity) subject, (Entity) object);
+                entitySubject = entity (subject, "subject", line);
+                entityObject = entity (object, "object", line);
+                break;
+            case used:
+            case wasEndedBy:
             case wasStartedBy:
-                return new WasStartedBy ((Activity) subject, (Entity) object);
+                activitySubject = activity (subject, "subject", line);
+                entityObject = entity (object, "object", line);
+                break;
+            case wasGeneratedBy:
+            case wasInvalidatedBy:
+                entitySubject = entity (subject, "subject", line);
+                activityObject = activity (object, "object", line);
+                break;
+            case actedOnBehalfOf:
+                agentSubject = agent (subject, "subject", line);
+                agentObject = agent (object, "object", line);
+                break;
+            case wasAssociatedWith:
+                activitySubject = activity (subject, "subject", line);
+                agentObject = agent (object, "object", line);
+                break;
+            case wasAttributedTo:
+                entitySubject = entity (subject, "subject", line);
+                agentObject = agent (object, "object", line);
+                break;
+            case wasInformedBy:
+                activitySubject = activity (subject, "subject", line);
+                activityObject = activity (object, "object", line);
+                break;
+        }
+        
+        switch (relation) {
+            case alternateOf:
+                return new AlternateOf (entitySubject, entityObject);
+            case specializationOf:
+                return new SpecializationOf (entitySubject, entityObject);
+            case hadMember:
+                return new HadMember (entitySubject, entityObject);
+            case actedOnBehalfOf:
+                return new ActedOnBehalfOf (agentSubject, agentObject);
+            case hadPrimarySource:
+                return new HadPrimarySource (entitySubject, entityObject);
+            case used:
+                return new Used (activitySubject, entityObject);
+            case wasAssociatedWith:
+                return new WasAssociatedWith (activitySubject, agentObject);
+            case wasAttributedTo:
+                return new WasAttributedTo (entitySubject, agentObject);
+            case wasDerivedFrom:
+                return new WasDerivedFrom (entitySubject, entityObject);
+            case wasEndedBy:
+                return new WasEndedBy (activitySubject, entityObject);
+            case wasGeneratedBy:
+                return new WasGeneratedBy (entitySubject, activityObject);
+            case wasInformedBy:
+                return new WasInformedBy (activitySubject, activityObject);
+            case wasInvalidatedBy:
+                return new WasInvalidatedBy (entitySubject, activityObject);
+            case wasRevisionOf:
+                return new WasRevisionOf (entitySubject, entityObject);
+            case wasQuotedFrom:
+                return new WasQuotedFrom (entitySubject, entityObject);
+            case wasStartedBy:
+                return new WasStartedBy (activitySubject, entityObject);
             case wasInfluencedBy:
                 return new WasInfluencedBy ((Influenceable) subject, (Influenceable) object);
             default:
@@ -155,7 +199,7 @@ public class ProvConstructer {
         if (object instanceof Entity) {
             return (Entity) object;
         } else {
-            throw new DeserialisationException ("Entity " + position + " expected " + line + ", but found " + object.getClass ().getSimpleName ());
+            throw new DeserialisationException ("Entity " + position + " expected, but found " + object.getClass ().getSimpleName () + " in " + line);
         }
     }
 
