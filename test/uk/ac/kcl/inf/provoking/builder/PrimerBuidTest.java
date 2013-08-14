@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.model.Document;
+import uk.ac.kcl.inf.provoking.model.util.EquivalenceChecker;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
 import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
@@ -39,7 +40,7 @@ public class PrimerBuidTest {
         ProvBuilder b = new ProvBuilder ("ex:", "http://www.inf.kcl.ac.uk/staff/simonm/provoking#");
         String file1 = "test.ttl", file2 = "test2.ttl";
         JenaDeserialiser in = new JenaDeserialiser ();
-        Document document;
+        Document document1, document2;
         
         b.setPrefix ("dcterms:", "http://purl.org/dc/terms/");
         b.setPrefix ("foaf:", "http://xmlns.com/foaf/0.1/");
@@ -79,17 +80,17 @@ public class PrimerBuidTest {
         b.entity ("articleV2").specializationOf ().entity ("article");
         b.entity ("articleV2").alternateOf ().entity ("articleV1");
         
-        document = b.build ();
+        document1 = b.build ();
 
         TurtlePrinter out1 = new TurtlePrinter (new File (file1));
-        out1.serialise (document);
+        out1.serialise (document1);
         out1.close ();
         
         in.read (file1, null, Language.turtle);
-        document = in.build ();
+        document2 = in.build ();
 
         TurtlePrinter out2 = new TurtlePrinter (new File (file2));
-        out2.serialise (document);
+        out2.serialise (document2);
         out2.close ();
     }
 }
