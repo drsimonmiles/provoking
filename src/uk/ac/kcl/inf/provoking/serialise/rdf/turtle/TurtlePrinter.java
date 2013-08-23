@@ -91,7 +91,7 @@ public class TurtlePrinter {
             }
             _output.print ("\"");
             _output.print (value);
-            _output.print ("\"");
+            _output.print ("\" ");
         }
 
         public void stop () {
@@ -164,6 +164,10 @@ public class TurtlePrinter {
             _output.print ("<");
             _output.print (uri.toString ());
             _output.print ("> ");
+        }
+
+        @Override
+        public void setPrefix (String prefix, String namespaceURI) {
         }
     }
 }

@@ -9,4 +9,5 @@ public interface TriplesListener {
     void triple (String blankSubject, URI predicate, URI object);
     void triple (String blankSubject, URI predicate, String blankObject);
     void triple (String blankSubject, URI predicate, Literal object);
+    void setPrefix (String prefix, String namespaceURI);
 }

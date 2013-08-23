@@ -35,16 +35,35 @@ import uk.ac.kcl.inf.provoking.model.util.Identified;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
 
+/**
+ * Serialises a PROV Document into a sequence of RDF triples, sent to registered
+ * triple listeners for recording in the desired storage. Triple listeners are
+ * registered on construction of the RDFSerialiser.
+ * 
+ * @author Simon Miles
+ */
 public class RDFSerialiser {
     private static int _lastBlank = 0;
     private List<TriplesListener> _listeners;
     private Map<Description, String> _blankIDs;
 
+    /**
+     * Create a serialiser returning triples to the given listeners.
+     * 
+     * @param listeners Listeners receiving the triples produced by serialising documents.
+     */
     public RDFSerialiser (TriplesListener... listeners) {
         _listeners = new LinkedList<> (Arrays.asList (listeners));
         _blankIDs = new HashMap<> ();
     }
 
+    /**
+     * Creates a blank node identifier for the given description, or returns the
+     * previously created identifier if one exists.
+     * 
+     * @param description The description for which a blank node identifier is required
+     * @return The blank node identifier string
+     */
     private String blank (Description description) {
         String blank = _blankIDs.get (description);
 
@@ -56,7 +75,14 @@ public class RDFSerialiser {
 
         return blank;
     }
-    
+
+    /**
+     * Report a triple with a URI subject and literal object to the registered listeners.
+     * 
+     * @param subject The triple subject
+     * @param predicate The triple predicate
+     * @param object The triple object
+     */
     private void fire (URI subject, URI predicate, Literal object) {
         predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
@@ -64,6 +90,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Report a triple with a URI subject and a URI object to the registered listeners.
+     * 
+     * @param subject The triple subject
+     * @param predicate The triple predicate
+     * @param object The triple object
+     */
     private void fire (URI subject, URI predicate, URI object) {
         predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
@@ -71,6 +104,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Report a triple with a URI subject and a blank node object to the registered listeners.
+     * 
+     * @param subject The triple subject
+     * @param predicate The triple predicate
+     * @param object The triple object
+     */
     private void fire (URI subject, URI predicate, String blankObject) {
         predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
@@ -78,6 +118,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Report a triple with a blank node subject and a literal object to the registered listeners.
+     * 
+     * @param subject The triple subject
+     * @param predicate The triple predicate
+     * @param object The triple object
+     */
     private void fire (String blankSubject, URI predicate, Literal object) {
         predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
@@ -85,6 +132,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Report a triple with a blank node subject and a URI object to the registered listeners.
+     * 
+     * @param subject The triple subject
+     * @param predicate The triple predicate
+     * @param object The triple object
+     */
     private void fire (String blankSubject, URI predicate, URI object) {
         predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
@@ -92,6 +146,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Report a triple with a blank node subject and a blank node object to the registered listeners.
+     * 
+     * @param subject The triple subject
+     * @param predicate The triple predicate
+     * @param object The triple object
+     */
     private void fire (String blankSubject, URI predicate, String blankObject) {
         predicate = provnToProvo (predicate);
         for (TriplesListener listener : _listeners) {
@@ -100,7 +161,15 @@ public class RDFSerialiser {
     }
 
     /**
-     * Returns true if the given description can be expressed by a binary, rather than qualified, relation
+     * Returns true if the given description can be expressed by a binary, rather than qualified, relation.
+     * A description will fit this criteria if it has no attributes, no timestamp, no
+     * role, no location, no other optional arguments (e.g. the plan for wasAssociatedWith relations),
+     * and there is no serialisation hint in the document stating that the description should
+     * be explicitly identified.
+     * 
+     * @param description The description that may be expressible as a single PROV relation triple
+     * @param document The document in which the description is contained
+     * @param optionalArguments The optional arguments of the description
      */
     private boolean isMinimal (Description description, Document document, Object... optionalArguments) {
         if (description instanceof AttributeHolder && ((AttributeHolder) description).hasAttributes ()) {
@@ -128,6 +197,14 @@ public class RDFSerialiser {
         return true;
     }
 
+    /**
+     * Returns the PROV-O equivalents for PROV-O vocabulary, i.e. prov:type becomes
+     * rdf:type and prov:label becomes rdf:label. In all other cases, the URI
+     * is returned unchanged.
+     * 
+     * @param predicate The original URI (possibly PROV-N specific)
+     * @return The translated PROV-O URI
+     */
     private URI provnToProvo (URI predicate) {
         if (predicate.equals (Term.type.uri ())) {
             return RDF.typeURI ();
@@ -138,6 +215,12 @@ public class RDFSerialiser {
         return predicate;
     }
 
+    /**
+     * Serialises the given PROV document, causing triples to be sent to 
+     * the registered triple listeners.
+     * 
+     * @param document The document to serialise
+     */
     public void serialise (Document document) {
         List<URI> rolesAndLocations = new LinkedList<> ();
         
@@ -146,6 +229,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Serialises a PROV description.
+     * 
+     * @param description The description to serialise
+     * @param document The document from which the description is drawn
+     * @param rolesAndLocations A record of which role and location URIs have already been given type declaration triples in the serialisation
+     */
     private void serialise (Description description, Document document, List<URI> rolesAndLocations) {
         Term qualifiedRelation = Term.qualifiedDerivation;
         
@@ -330,6 +420,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Serialises a relation between two descriptions
+     * 
+     * @param subject The subject description
+     * @param predicate The relation
+     * @param object The object description
+     */
     private void serialise (Description subject, Term predicate, Description object) {
         URI objectID;
 
@@ -344,6 +441,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Serialises a relation between a descriptions and a URI resource.
+     * 
+     * @param subject The subject description
+     * @param predicate The relation
+     * @param objectID The object URI
+     */
     private void serialise (Description subject, URI predicate, URI objectID) {
         URI subjectID;
 
@@ -358,6 +462,13 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Serialises a relation between a descriptions and a blank node resource.
+     * 
+     * @param subject The subject description
+     * @param predicate The relation
+     * @param blankObject The blank node object resource
+     */
     private void serialise (Description subject, URI predicate, String blankObject) {
         URI subjectID;
 
@@ -372,10 +483,24 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Serialises a relation between a descriptions and a literal resource.
+     * 
+     * @param subject The subject description
+     * @param predicate The relation, identified as a Term
+     * @param blankObject The blank node object resource
+     */
     private void serialiseLiteral (Description subject, Term predicate, Object object) {
         serialiseLiteral (subject, predicate.uri (), object);
     }
 
+    /**
+     * Serialises a relation between a descriptions and a literal resource.
+     * 
+     * @param subject The subject description
+     * @param predicate The relation, identified as a URI
+     * @param blankObject The blank node object resource
+     */
     private void serialiseLiteral (Description subject, URI predicate, Object object) {
         URI subjectID;
 
@@ -390,6 +515,12 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Records a triple recording the type of a given description.
+     * 
+     * @param subject The description whose type to assert
+     * @param term The type, as a Term
+     */
     private void type (Description subject, Term term) {
         URI id = uriID (subject);
 
@@ -400,10 +531,23 @@ public class RDFSerialiser {
         }
     }
 
+    /**
+     * Records a triple recording the type of a given blank node resource.
+     * 
+     * @param blank The blank node resource whose type to assert
+     * @param term The type, as a Term
+     */
     private void type (String blank, Term term) {
         fire (blank, RDF.typeURI (), term.uri ());
     }
 
+    /**
+     * Returns the URI identifier of the given description, if one has been set,
+     * or else null.
+     * 
+     * @param identified The description with the identifier
+     * @return The description's URI identifier or else null
+     */
     private URI uriID (Description identified) {
         Object id;
 

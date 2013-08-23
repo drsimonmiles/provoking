@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
@@ -84,6 +85,11 @@ public class JenaDeserialiser {
      * @param model The model to load the PROV descriptions from
      */
     public void deserialise (Model model) throws DeserialisationException {
+        Map<String, String> prefixes = model.getNsPrefixMap ();
+        
+        for (String prefix : prefixes.keySet ()) {
+            _deserialiser.setPrefix (prefix + ":", prefixes.get (prefix));
+        }
         for (Statement statement : model.listStatements ().toList ()) {
             deserialise (statement);
         }        

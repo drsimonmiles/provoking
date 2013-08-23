@@ -15,6 +15,8 @@ import static uk.ac.kcl.inf.provoking.model.util.Term.type;
 import static uk.ac.kcl.inf.provoking.model.util.Term.value;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
+import uk.ac.kcl.inf.provoking.serialise.SerialisationHint;
+import static uk.ac.kcl.inf.provoking.serialise.SerialisationHintType.namespacePrefix;
 
 /**
  * Implements a TriplesListener, receiving triples read in from some source and
@@ -25,11 +27,22 @@ import uk.ac.kcl.inf.provoking.serialise.ProvConstructer;
  */
 public class RDFDeserialiser implements TriplesListener {
     private Map<Object, SingleDescriptionTriples> _buffered;
+    private Map<String, String> _prefixes;
 
+    /**
+     * Create a new deserialiser.
+     */
     public RDFDeserialiser () {
         _buffered = new HashMap<> ();
+        _prefixes = new HashMap<> ();
     }
 
+    /**
+     * Builds a PROV document from the triples that have been read.
+     * 
+     * @return The PROV document built
+     * @throws DeserialisationException If the triples do not produce a valid PROV document
+     */
     public Document build () throws DeserialisationException {
         Document document = new Document ();
         List<Description> additional = new LinkedList<> ();
@@ -42,6 +55,9 @@ public class RDFDeserialiser implements TriplesListener {
             }
         }
         document.addAll (additional);
+        for (String prefix : _prefixes.keySet ()) {
+            document.addSerialisationHint (new SerialisationHint (namespacePrefix, prefix, _prefixes.get (prefix)));
+        }
 
         return document;
     }
@@ -56,7 +72,7 @@ public class RDFDeserialiser implements TriplesListener {
 
         if (type == null) {
             type = getImpliedType (buffer.getSubject ());
-            if (type == null) { // Not a PROV statement
+            if (type == null) { // Not a PROV statement subject
                 return null;
             }
         }
@@ -100,6 +116,7 @@ public class RDFDeserialiser implements TriplesListener {
         String line;
 
         for (Object objectKey : buffer.getObjects (predicate)) {
+            // First, check for relations where the object is the literal value
             line = "(" + buffer.getSubject () + " " + predicate + " " + objectKey + ")";
             switch (relation) {
                 case label:
@@ -253,6 +270,11 @@ public class RDFDeserialiser implements TriplesListener {
         }
     }
 
+    @Override
+    public void setPrefix (String prefix, String vocabularyURI) {
+        _prefixes.put (prefix, vocabularyURI);
+    }
+    
     @Override
     public void triple (URI subject, URI predicate, URI object) {
         getBuffer (subject).add (predicate, object);
