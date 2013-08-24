@@ -28,6 +28,7 @@ import static uk.ac.kcl.inf.provoking.serialise.SerialisationHintType.namespaceP
 public class RDFDeserialiser implements TriplesListener {
     private Map<Object, SingleDescriptionTriples> _buffered;
     private Map<String, String> _prefixes;
+    private EquivalentRelationsChecker _relationChecker;
 
     /**
      * Create a new deserialiser.
@@ -35,6 +36,7 @@ public class RDFDeserialiser implements TriplesListener {
     public RDFDeserialiser () {
         _buffered = new HashMap<> ();
         _prefixes = new HashMap<> ();
+        _relationChecker = new EquivalentRelationsChecker ();
     }
 
     /**
@@ -54,22 +56,24 @@ public class RDFDeserialiser implements TriplesListener {
                 document.add (description);
             }
         }
-        document.addAll (additional);
+        // Add all the binary relations for which a qualified relation has not already been recorded
+        for (Description binary : additional) {
+            if (!_relationChecker.contains (document, binary)) {
+                document.add (binary);
+            }
+        }
         for (String prefix : _prefixes.keySet ()) {
             document.addSerialisationHint (new SerialisationHint (namespacePrefix, prefix, _prefixes.get (prefix)));
         }
 
         return document;
     }
-
+    
     private Description deserialise (SingleDescriptionTriples buffer, List<Description> additional) throws DeserialisationException {
         if (buffer.hasBeenDeserialised ()) {
             return buffer.getDeserialisation ();
         }
 
-        if (buffer.getIdentifier () != null && buffer.getIdentifier ().toString ().contains ("chart2")) {
-            System.out.println ("deserialising chart2");
-        }
         URI type = getSpecificType (buffer);
         Description description;
 
@@ -91,6 +95,9 @@ public class RDFDeserialiser implements TriplesListener {
                         for (Literal object : buffer.getLiteralObjects (predicate)) {
                             ((AttributeHolder) description).addAttribute (predicate, object._value);
                         }
+                        for (URI object : buffer.getURIObjects (predicate)) {
+                            ((AttributeHolder) description).addAttribute (predicate, object);
+                        }
                     }
                 }
             }
@@ -109,7 +116,7 @@ public class RDFDeserialiser implements TriplesListener {
      * @param predicate The predicate of the triples to deserialise.
      * @param buffer The triples belonging to the given subject.
      * @param description The deserialised subject.
-     * @param additional If the predicate is a binary PROV releation, this list
+     * @param additional If the predicate is a binary PROV relation, this list
      * collects the deserialised relations.
      */
     private void deserialise (URI predicate, SingleDescriptionTriples buffer, Description description, List<Description> additional) throws DeserialisationException {
@@ -118,17 +125,9 @@ public class RDFDeserialiser implements TriplesListener {
         Description objectDescription, newDescription;
         String line;
 
-        if (buffer.getIdentifier () != null && buffer.getIdentifier ().toString ().contains ("chart2")
-            && predicate.toString ().contains ("wasDerivedFrom")) {
-            System.out.println ("deserialising chart2 wasDerivedFrom");
-        }
         for (Object objectKey : buffer.getObjects (predicate)) {
             // First, check for relations where the object is the literal value
             line = "(" + buffer.getSubject () + " " + predicate + " " + objectKey + ")";
-        if (buffer.getIdentifier () != null && buffer.getIdentifier ().toString ().contains ("chart2")
-            && predicate.toString ().contains ("wasDerivedFrom")) {
-            System.out.println ("deserialising chart2 wasDerivedFrom " + objectKey);
-        }
             switch (relation) {
                 case label:
                 case value:
@@ -139,7 +138,7 @@ public class RDFDeserialiser implements TriplesListener {
                     ((Activity) description).setEndedAt ((Date) ((Literal) objectKey)._value);
                     continue;
                 case startedAtTime:
-                    ((Activity) description).setEndedAt ((Date) ((Literal) objectKey)._value);
+                    ((Activity) description).setStartedAt ((Date) ((Literal) objectKey)._value);
                     continue;
                 case atTime:
                     ((InstantaneousEvent) description).setTime ((Date) ((Literal) objectKey)._value);

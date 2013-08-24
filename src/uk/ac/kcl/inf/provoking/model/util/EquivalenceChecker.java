@@ -37,6 +37,22 @@ public class EquivalenceChecker {
     }
 
     /**
+     * Tests whether a set of descriptions contains an equivalent to a given description.
+     * 
+     * @param container The set of descriptions to check
+     * @param element The description for which an equivalent is sought
+     * @return True if an equivalent to the element description is found in the container
+     */
+    public boolean contains (Iterable<Description> container, Description element) {
+        for (Description description : container) {
+            if (equivalentDescriptions (description, element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Tests whether two documents are equivalent. They are equivalent if both
      * are null, or if neither are null, they are the same size, and for every
      * description in each document there is an equivalent description in the
