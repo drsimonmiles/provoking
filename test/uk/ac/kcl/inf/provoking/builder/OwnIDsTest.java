@@ -38,15 +38,10 @@ public class OwnIDsTest {
     @After
     public void tearDown () {
     }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+
     @Test
     public void buildWithOwnIDs () throws IOException, DeserialisationException, URISyntaxException {
         ProvBuilder b = new ProvBuilder ("ex:", "http://www.inf.kcl.ac.uk/staff/simonm/provoking#");
-        StringWriter writer = new StringWriter ();
         Document document;
         Description description;
         String serialisation;
@@ -61,13 +56,8 @@ public class OwnIDsTest {
         assertTrue (description instanceof Entity);
         assertEquals (((Entity) description).getIdentifier ().toString (), "http://info.com/1");
 
-        TurtlePrinter out1 = new TurtlePrinter (writer);
-        out1.serialise (document);
-        out1.close ();
-        serialisation = writer.getBuffer ().toString ();
-        
+        serialisation = document.toString ();        
         assertNotNull (serialisation);
-        System.out.println (serialisation);
         assertTrue (serialisation.contains ("<http://info.com/1>"));
         assertTrue (serialisation.contains ("Crime rises"));
     }

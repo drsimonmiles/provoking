@@ -67,6 +67,9 @@ public class RDFDeserialiser implements TriplesListener {
             return buffer.getDeserialisation ();
         }
 
+        if (buffer.getIdentifier () != null && buffer.getIdentifier ().toString ().contains ("chart2")) {
+            System.out.println ("deserialising chart2");
+        }
         URI type = getSpecificType (buffer);
         Description description;
 
@@ -115,9 +118,17 @@ public class RDFDeserialiser implements TriplesListener {
         Description objectDescription, newDescription;
         String line;
 
+        if (buffer.getIdentifier () != null && buffer.getIdentifier ().toString ().contains ("chart2")
+            && predicate.toString ().contains ("wasDerivedFrom")) {
+            System.out.println ("deserialising chart2 wasDerivedFrom");
+        }
         for (Object objectKey : buffer.getObjects (predicate)) {
             // First, check for relations where the object is the literal value
             line = "(" + buffer.getSubject () + " " + predicate + " " + objectKey + ")";
+        if (buffer.getIdentifier () != null && buffer.getIdentifier ().toString ().contains ("chart2")
+            && predicate.toString ().contains ("wasDerivedFrom")) {
+            System.out.println ("deserialising chart2 wasDerivedFrom " + objectKey);
+        }
             switch (relation) {
                 case label:
                 case value:

@@ -317,7 +317,10 @@ public class RDFSerialiser {
             serialise (description, Term.agent, ((WasAttributedTo) description).getAttributedTo ());
         }
         if (description instanceof WasDerivedFrom) {
-            serialise (((WasDerivedFrom) description).getDerived (), Term.wasDerivedFrom, ((WasDerivedFrom) description).getDerivedFrom ());
+            // If a more specialised term has not been already recorded, then record the binary derived relationx
+            if (qualifiedRelation == Term.wasDerivedFrom) {
+                serialise (((WasDerivedFrom) description).getDerived (), Term.wasDerivedFrom, ((WasDerivedFrom) description).getDerivedFrom ());
+            }
             if (isMinimal (description, document, ((WasDerivedFrom) description).getDeriver (),
                            ((WasDerivedFrom) description).getGeneration (), ((WasDerivedFrom) description).getUsage ())) {
                 return;

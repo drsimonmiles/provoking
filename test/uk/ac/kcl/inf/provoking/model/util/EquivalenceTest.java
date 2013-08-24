@@ -1,27 +1,20 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.*;
 import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.builder.ProvBuilder;
-import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
-import uk.ac.kcl.inf.provoking.model.Activity;
 import uk.ac.kcl.inf.provoking.model.Description;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.model.Organization;
-import uk.ac.kcl.inf.provoking.model.WasAssociatedWith;
 import uk.ac.kcl.inf.provoking.model.WasAttributedTo;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
 import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
-import uk.ac.kcl.inf.provoking.serialise.rdf.turtle.TurtlePrinter;
 
 public class EquivalenceTest {
     @BeforeClass
@@ -126,7 +119,6 @@ public class EquivalenceTest {
         document2 = in.loadString (original, null, Language.turtle);
         
         equivalent = check.equivalentDocuments (document1, document2, inequivalences);
-        System.out.println (inequivalences);
         assertTrue (equivalent);
     }
 }

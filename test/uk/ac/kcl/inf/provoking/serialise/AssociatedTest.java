@@ -1,16 +1,12 @@
 package uk.ac.kcl.inf.provoking.serialise;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import org.junit.*;
-import uk.ac.kcl.inf.provoking.builder.ProvBuilder;
 import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
 import uk.ac.kcl.inf.provoking.model.Activity;
-import uk.ac.kcl.inf.provoking.model.Agent;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.model.Organization;
@@ -18,7 +14,6 @@ import uk.ac.kcl.inf.provoking.model.WasAssociatedWith;
 import uk.ac.kcl.inf.provoking.model.WasAttributedTo;
 import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
 import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
-import uk.ac.kcl.inf.provoking.serialise.rdf.turtle.TurtlePrinter;
 
 /**
  *
@@ -55,12 +50,7 @@ public class AssociatedTest {
         String original;
         
         document.addAll (activity, agent1, waw, agent2, wat, entity, aobo);
-        original = document.toString ();
-        System.out.println (original);
-        
-        in.readString (original, null, Language.turtle);
-        document = in.build ();
-        
-        System.out.println (document);
+        original = document.toString ();        
+        document = in.loadString (original, null, Language.turtle);
     }
 }

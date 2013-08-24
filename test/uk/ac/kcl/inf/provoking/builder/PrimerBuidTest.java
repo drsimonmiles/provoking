@@ -9,7 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import uk.ac.kcl.inf.provoking.model.Document;
-import uk.ac.kcl.inf.provoking.model.util.EquivalenceChecker;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
 import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
 import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
@@ -86,8 +85,7 @@ public class PrimerBuidTest {
         out1.serialise (document1);
         out1.close ();
         
-        in.read (file1, null, Language.turtle);
-        document2 = in.build ();
+        document2 = in.load (file1, null, Language.turtle);
 
         TurtlePrinter out2 = new TurtlePrinter (new File (file2));
         out2.serialise (document2);

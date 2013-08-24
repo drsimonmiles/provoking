@@ -39,15 +39,11 @@ public class InvalidDeserialisationTest {
                 + "ex:def a prov:Agent . \n"
                 + "ex:abc prov:wasAssociatedWith ex:def .\n";
         JenaDeserialiser in = new JenaDeserialiser ();
-        Document document;
 
         try {
-            in.readString (original, null, Language.turtle);
-            document = in.build ();
-            System.out.println (document);
+            in.loadString (original, null, Language.turtle);
             throw new RuntimeException ("Failed test");
-        } catch (DeserialisationException problem) {
-            System.out.println (problem.getMessage ());
+        } catch (DeserialisationException expectedProblem) {
         }
     }
 }

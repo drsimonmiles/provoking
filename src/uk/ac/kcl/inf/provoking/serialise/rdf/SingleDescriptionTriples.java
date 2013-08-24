@@ -1,8 +1,10 @@
 package uk.ac.kcl.inf.provoking.serialise.rdf;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import uk.ac.kcl.inf.provoking.model.Description;
 
 /**
@@ -97,8 +99,13 @@ class SingleDescriptionTriples implements Description {
         return objects;
     }
     
-    List<URI> getPredicates () {
-        List<URI> predicates = new LinkedList<> ();
+    /**
+     * Return the set of predicates in triples for this subject.
+     * 
+     * @return The set of distinct predicates in the triples recorded in this buffer.
+     */
+    Set<URI> getPredicates () {
+        Set<URI> predicates = new HashSet<> ();
         
         for (URIObject relation : _uriObjects) {
             predicates.add (relation._predicate);

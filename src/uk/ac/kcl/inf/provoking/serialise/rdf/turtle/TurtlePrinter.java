@@ -51,7 +51,7 @@ public class TurtlePrinter {
                 _output.print (hint.arguments[1].toString ());
                 _output.println ("> .");
                 _prefixes.put (hint.arguments[1].toString (), hint.arguments[0].toString ());
-                if (hint.arguments[0].toString ().equals ("xsd")) {
+                if (hint.arguments[0].toString ().equals ("xsd:")) {
                     xsd = true;
                 }
             }
