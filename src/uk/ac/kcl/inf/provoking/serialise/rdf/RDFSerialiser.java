@@ -301,7 +301,7 @@ public class RDFSerialiser {
         }
         if (description instanceof WasAssociatedWith) {
             serialise (((WasAssociatedWith) description).getResponsibleFor (), Term.wasAssociatedWith, ((WasAssociatedWith) description).getResponsible ());
-            if (isMinimal (description, document, ((WasAssociatedWith) description).getPlan ())) {
+            if (isMinimal (description, document, ((WasAssociatedWith) description).getPlan (), ((WasAssociatedWith) description).getRole ())) {
                 return;
             }
             serialise (((WasAssociatedWith) description).getResponsibleFor (), Term.qualifiedAssociation, description);
