@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class ActedOnBehalfOf extends AttributeHolder implements Description {
+public class ActedOnBehalfOf extends AttributeHolder {
     private static Term[] CLASS_TERMS = terms (Term.Delegation);
     private Agent _acter;
     private Agent _onBehalfOf;
@@ -57,6 +57,12 @@ public class ActedOnBehalfOf extends AttributeHolder implements Description {
 
     public void setOnBehalfOf (Agent onBehalfOf) {
         _onBehalfOf = onBehalfOf;
+    }
+
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"acter", "on behalf of", "for activity"},
+                         _acter, _onBehalfOf, _activity);
     }
 
     public static ActedOnBehalfOf reference (Object identifier) {

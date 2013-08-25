@@ -228,9 +228,9 @@ public class RDFSerialiser {
             serialise (description, document, rolesAndLocations);
         }
     }
-
+    
     /**
-     * Serialises a PROV description.
+     * Serialises a PROV description that is part of a document.
      * 
      * @param description The description to serialise
      * @param document The document from which the description is drawn
@@ -307,6 +307,7 @@ public class RDFSerialiser {
             serialise (((WasAssociatedWith) description).getResponsibleFor (), Term.qualifiedAssociation, description);
             serialise (description, Term.agent, ((WasAssociatedWith) description).getResponsible ());
             serialise (description, Term.hadPlan, ((WasAssociatedWith) description).getPlan ());
+            serialise (description, Term.hadRole, ((WasAssociatedWith) description).getRole ());
         }
         if (description instanceof WasAttributedTo) {
             serialise (((WasAttributedTo) description).getAttributed (), Term.wasAttributedTo, ((WasAttributedTo) description).getAttributedTo ());
@@ -318,7 +319,7 @@ public class RDFSerialiser {
         }
         if (description instanceof WasDerivedFrom) {
             // If a more specialised term has not been already recorded, then record the binary derived relationx
-            if (qualifiedRelation == Term.wasDerivedFrom) {
+            if (qualifiedRelation == Term.qualifiedDerivation) {
                 serialise (((WasDerivedFrom) description).getDerived (), Term.wasDerivedFrom, ((WasDerivedFrom) description).getDerivedFrom ());
             }
             if (isMinimal (description, document, ((WasDerivedFrom) description).getDeriver (),
@@ -349,12 +350,12 @@ public class RDFSerialiser {
             serialise (description, Term.activity, ((WasGeneratedBy) description).getGenerater ());
         }
         if (description instanceof WasInfluencedBy) {
-            serialise (((WasInfluencedBy) description).getInfluenced (), Term.wasInfluencedBy, ((WasInfluencedBy) description).getInfluencer ());
+            serialise ((Description) ((WasInfluencedBy) description).getInfluenced (), Term.wasInfluencedBy, (Description) ((WasInfluencedBy) description).getInfluencer ());
             if (isMinimal (description, document)) {
                 return;
             }
-            serialise (((WasInfluencedBy) description).getInfluenced (), Term.qualifiedInfluence, description);
-            serialise (description, Term.influencer, ((WasInfluencedBy) description).getInfluencer ());
+            serialise ((Description) ((WasInfluencedBy) description).getInfluenced (), Term.qualifiedInfluence, description);
+            serialise (description, Term.influencer, (Description) ((WasInfluencedBy) description).getInfluencer ());
         }
         if (description instanceof WasInformedBy) {
             serialise (((WasInformedBy) description).getInformed (), Term.wasInformedBy, ((WasInformedBy) description).getInformer ());

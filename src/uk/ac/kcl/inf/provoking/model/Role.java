@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class Role extends AttributeHolder implements Description {
+public class Role extends AttributeHolder {
     public Role (Object identifier) {
         super (identifier);
     }

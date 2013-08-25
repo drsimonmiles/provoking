@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class WasAssociatedWith extends AttributeHolder implements Description {
+public class WasAssociatedWith extends AttributeHolder {
     private Agent _responsible;
     private Activity _responsibleFor;
     private Entity _plan;
@@ -62,6 +62,12 @@ public class WasAssociatedWith extends AttributeHolder implements Description {
     
     public void setRole (Role role) {
         _role = role;
+    }
+
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"responsible", "responsible for", "plan", "role"},
+                         _responsible, _responsibleFor, _plan, _role);
     }
     
     public static WasAssociatedWith reference (Object identifier) {

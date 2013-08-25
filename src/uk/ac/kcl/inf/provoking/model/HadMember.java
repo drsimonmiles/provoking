@@ -1,6 +1,6 @@
 package uk.ac.kcl.inf.provoking.model;
 
-public class HadMember implements Description {
+public class HadMember extends Description {
     private Entity _collection;
     private Entity _member;
     
@@ -23,5 +23,11 @@ public class HadMember implements Description {
 
     public void setMember (Entity member) {
         _member = member;
+    }
+
+    @Override
+    public String toString () {
+        return toString (this, null, new String[] {"collection", "member"},
+                         _collection, _member);
     }
 }

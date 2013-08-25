@@ -4,7 +4,7 @@ import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class Agent extends AttributeHolder implements Description, Influenceable {
+public class Agent extends AttributeHolder implements Influenceable {
     private Location _location;
 
     public Agent (Object identifier, Location location) {
@@ -22,6 +22,11 @@ public class Agent extends AttributeHolder implements Description, Influenceable
     
     public void setLocation (Location location) {
         _location = location;
+    }
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"location"}, _location);
     }
 
     public static Agent reference (Object identifier) {

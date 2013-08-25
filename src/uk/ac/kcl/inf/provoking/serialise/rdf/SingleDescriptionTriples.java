@@ -14,7 +14,7 @@ import uk.ac.kcl.inf.provoking.model.Description;
  * 
  * @author Simon Miles
  */
-class SingleDescriptionTriples implements Description {
+class SingleDescriptionTriples {
     private final URI _subjectURI;
     private final String _subjectBlank;
     private final List<URIObject> _uriObjects;

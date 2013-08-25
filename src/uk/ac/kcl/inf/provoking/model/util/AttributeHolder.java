@@ -104,4 +104,9 @@ public abstract class AttributeHolder extends Identified {
     public void subtype (Term type) {
         addAttribute (Term.type.uri (), type.uri ());
     }
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), null);
+    }
 }

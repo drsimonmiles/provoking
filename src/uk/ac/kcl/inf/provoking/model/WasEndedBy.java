@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class WasEndedBy extends InstantaneousEvent implements Description {
+public class WasEndedBy extends InstantaneousEvent {
     private Activity _ended;
     private Activity _ender;
     private Entity _trigger;
@@ -90,6 +90,12 @@ public class WasEndedBy extends InstantaneousEvent implements Description {
 
     public void setTrigger (Entity trigger) {
         _trigger = trigger;
+    }
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"ender", "ended", "trigger", "location", "role", "time"},
+                         _ender, _ended, _trigger, getLocation (), getRole (), getTime ());
     }
     
     public static WasEndedBy reference (Object identifier) {

@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class WasStartedBy extends InstantaneousEvent implements Description {
+public class WasStartedBy extends InstantaneousEvent {
     private Activity _started;
     private Activity _starter;
     private Entity _trigger;
@@ -92,6 +92,12 @@ public class WasStartedBy extends InstantaneousEvent implements Description {
         _trigger = trigger;
     }
     
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"starter", "started", "trigger", "location", "role", "time"},
+                         _starter, _started, _trigger, getLocation (), getRole (), getTime ());
+    }
+
     public static WasStartedBy reference (Object identifier) {
         WasStartedBy reference = new WasStartedBy (identifier, null, null, (Activity) null);
         reference.setIsReference (true);

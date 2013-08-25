@@ -1,9 +1,6 @@
 package uk.ac.kcl.inf.provoking.builder;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -15,9 +12,6 @@ import uk.ac.kcl.inf.provoking.model.Description;
 import uk.ac.kcl.inf.provoking.model.Document;
 import uk.ac.kcl.inf.provoking.model.Entity;
 import uk.ac.kcl.inf.provoking.serialise.DeserialisationException;
-import uk.ac.kcl.inf.provoking.serialise.rdf.Language;
-import uk.ac.kcl.inf.provoking.serialise.rdf.jena.JenaDeserialiser;
-import uk.ac.kcl.inf.provoking.serialise.rdf.turtle.TurtlePrinter;
 
 public class OwnIDsTest {
     public OwnIDsTest () {

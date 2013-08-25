@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class WasInformedBy extends AttributeHolder implements Description {
+public class WasInformedBy extends AttributeHolder {
     private Activity _informed;
     private Activity _informer;
     
@@ -34,6 +34,12 @@ public class WasInformedBy extends AttributeHolder implements Description {
         _informer = informer;
     }
 
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"informed", "informed by"},
+                         _informed, _informer);
+    }
+ 
     public static WasInformedBy reference (Object identifier) {
         WasInformedBy reference = new WasInformedBy (identifier, null, null);
         reference.setIsReference (true);

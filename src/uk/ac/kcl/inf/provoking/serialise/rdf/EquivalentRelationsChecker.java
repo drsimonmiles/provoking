@@ -1,6 +1,7 @@
 package uk.ac.kcl.inf.provoking.serialise.rdf;
 
 import uk.ac.kcl.inf.provoking.model.ActedOnBehalfOf;
+import uk.ac.kcl.inf.provoking.model.Description;
 import uk.ac.kcl.inf.provoking.model.Used;
 import uk.ac.kcl.inf.provoking.model.WasAssociatedWith;
 import uk.ac.kcl.inf.provoking.model.WasAttributedTo;
@@ -131,8 +132,8 @@ public class EquivalentRelationsChecker extends EquivalenceChecker {
     @Override
     public boolean equivalentWasInfluencedBys (WasInfluencedBy description1, WasInfluencedBy description2) {
         return neitherNull (description1, description2)
-                && equivalentDescriptions (description1.getInfluenced (), description2.getInfluenced ())
-                && equivalentDescriptions (description1.getInfluencer (), description2.getInfluencer ());
+                && equivalentDescriptions ((Description) description1.getInfluenced (), (Description) description2.getInfluenced ())
+                && equivalentDescriptions ((Description) description1.getInfluencer (), (Description) description2.getInfluencer ());
     }
 
     /**

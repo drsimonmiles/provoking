@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf.provoking.model;
 
+import static uk.ac.kcl.inf.provoking.model.Description.toString;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
 public class Bundle extends Entity {
@@ -22,5 +23,10 @@ public class Bundle extends Entity {
 
     public Document getDescriptions () {
         return _descriptions;
+    }
+
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"contents"}, toString (_descriptions));
     }
 }

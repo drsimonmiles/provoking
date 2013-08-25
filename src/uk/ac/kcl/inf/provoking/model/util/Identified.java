@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf.provoking.model.util;
 
-import java.util.Objects;
 import uk.ac.kcl.inf.provoking.model.Description;
 
 /**
@@ -9,7 +8,7 @@ import uk.ac.kcl.inf.provoking.model.Description;
  * 
  * @author Simon Miles
  */
-public abstract class Identified implements Description {
+public abstract class Identified extends Description {
     private Object _identifier;
     private boolean _isReference;
 

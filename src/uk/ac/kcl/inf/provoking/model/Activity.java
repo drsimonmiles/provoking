@@ -5,7 +5,7 @@ import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class Activity extends AttributeHolder implements Description, Influenceable {
+public class Activity extends AttributeHolder implements Influenceable {
     private static Term[] CLASS_TERMS = terms (Term.Activity);
     private Date _startedAt;
     private Date _endedAt;
@@ -56,6 +56,12 @@ public class Activity extends AttributeHolder implements Description, Influencea
         if (endedAt != null) {
             _endedAt = endedAt;
         }
+    }
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"started at", "ended at", "location"},
+                         _startedAt, _endedAt, _location);
     }
     
     public static Activity reference (Object identifier) {

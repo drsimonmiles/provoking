@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class WasAttributedTo extends AttributeHolder implements Description {
+public class WasAttributedTo extends AttributeHolder {
     private Agent _attributedTo;
     private Entity _attributed;
     
@@ -32,6 +32,12 @@ public class WasAttributedTo extends AttributeHolder implements Description {
 
     public void setAttributed (Entity attributed) {
         _attributed = attributed;
+    }
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"attributed", "attributed to"},
+                         _attributed, _attributedTo);
     }
     
     public static WasAttributedTo reference (Object identifier) {

@@ -47,6 +47,12 @@ public class WasGeneratedBy extends InstantaneousEvent {
         _generated = generated;
     }
 
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"generater", "generated", "location", "role", "time"},
+                         _generater, _generated, getLocation (), getRole (), getTime ());
+    }
+
     public static WasGeneratedBy reference (Object identifier) {
         WasGeneratedBy reference = new WasGeneratedBy (identifier, null, null);
         reference.setIsReference (true);

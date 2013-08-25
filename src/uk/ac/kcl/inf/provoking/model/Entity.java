@@ -4,7 +4,7 @@ import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class Entity extends AttributeHolder implements Description, Influenceable {
+public class Entity extends AttributeHolder implements Influenceable {
     private Location _location;
     
     public Entity (Object identifier, Location location) {
@@ -23,6 +23,11 @@ public class Entity extends AttributeHolder implements Description, Influenceabl
     public void setLocation (Location location) {
         _location = location;
     }    
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"location"}, _location);
+    }
     
     public static Entity reference (Object identifier) {
         Entity reference = new Entity (identifier);

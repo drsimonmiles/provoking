@@ -46,6 +46,12 @@ public class Used extends InstantaneousEvent {
     public void setUsed (Entity used) {
         _used = used;
     }
+    
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"user", "used", "location", "role", "time"},
+                         _user, _used, getLocation (), getRole (), getTime ());
+    }
 
     public static Used reference (Object identifier) {
         Used reference = new Used (identifier, null, null);

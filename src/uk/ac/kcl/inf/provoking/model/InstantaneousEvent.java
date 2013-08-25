@@ -3,7 +3,7 @@ package uk.ac.kcl.inf.provoking.model;
 import java.util.Date;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 
-public abstract class InstantaneousEvent extends AttributeHolder implements Description {
+public abstract class InstantaneousEvent extends AttributeHolder {
     private Date _time;
     private Location _location;
     private Role _role;

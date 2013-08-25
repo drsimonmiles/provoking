@@ -119,6 +119,7 @@ public class EquivalenceTest {
         document2 = in.loadString (original, null, Language.turtle);
         
         equivalent = check.equivalentDocuments (document1, document2, inequivalences);
+        System.out.println (inequivalences);
         assertTrue (equivalent);
     }
 }

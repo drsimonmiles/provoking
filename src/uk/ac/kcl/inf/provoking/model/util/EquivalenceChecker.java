@@ -701,8 +701,8 @@ public class EquivalenceChecker {
                 || (neitherNull (description1, description2)
                 && equivalentIdentifiers (description1, description2)
                 && equivalentAttributes (description1, description2)
-                && equivalentDescriptions (description1.getInfluenced (), description2.getInfluenced ())
-                && equivalentDescriptions (description1.getInfluencer (), description2.getInfluencer ()));
+                && equivalentDescriptions ((Description) description1.getInfluenced (), (Description) description2.getInfluenced ())
+                && equivalentDescriptions ((Description) description1.getInfluencer (), (Description) description2.getInfluencer ()));
     }
 
     /**

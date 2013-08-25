@@ -63,6 +63,12 @@ public class WasInvalidatedBy extends InstantaneousEvent {
         _invalidated = invalidated;
     }
     
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"invalidated", "invalidated by", "location", "role", "time"},
+                         _invalidated, _invalidater, getLocation (), getRole (), getTime ());
+    }
+
     public static WasInvalidatedBy reference (Object identifier) {
         WasInvalidatedBy reference = new WasInvalidatedBy (identifier, null, (Activity) null);
         reference.setIsReference (true);

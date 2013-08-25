@@ -4,7 +4,7 @@ import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
 import uk.ac.kcl.inf.provoking.model.util.Influenceable;
 import uk.ac.kcl.inf.provoking.model.util.Term;
 
-public class WasInfluencedBy extends AttributeHolder implements Description {
+public class WasInfluencedBy extends AttributeHolder {
     private Influenceable _influencer;
     private Influenceable _influenced;
     
@@ -35,6 +35,12 @@ public class WasInfluencedBy extends AttributeHolder implements Description {
         _influencer = influencer;
     }
 
+    @Override
+    public String toString () {
+        return toString (this, getAttributes (), new String[] {"influenced", "influenced by"},
+                         _influenced, _influencer);
+    }
+    
     public static WasInfluencedBy reference (Object identifier) {
         WasInfluencedBy reference = new WasInfluencedBy (identifier, null, null);
         reference.setIsReference (true);
