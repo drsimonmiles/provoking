@@ -12,4 +12,9 @@ public class SoftwareAgent extends Agent {
     public Term[] getClassTerms () {
         return CLASS_TERMS;
     }
+    
+    @Override
+    public Term getClassTerm () {
+        return Term.SoftwareAgent;
+    }
 }

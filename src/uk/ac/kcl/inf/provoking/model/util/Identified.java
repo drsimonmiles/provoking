@@ -22,6 +22,10 @@ public abstract class Identified extends Description {
         _isReference = false;
     }
     
+    public Term getClassTerm () {
+        return getClassTerms() [0];
+    }
+    
     public abstract Term[] getClassTerms ();
     
     public Object getIdentifier () {

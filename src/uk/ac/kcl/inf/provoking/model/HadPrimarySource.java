@@ -40,4 +40,9 @@ public class HadPrimarySource extends WasDerivedFrom {
     public Term[] getClassTerms () {
         return CLASS_TERMS;
     }
+    
+    @Override
+    public Term getClassTerm () {
+        return Term.PrimarySource;
+    }
 }

@@ -12,4 +12,9 @@ public class Plan extends Entity {
     public Term[] getClassTerms () {
         return CLASS_TERMS;
     }
+    
+    @Override
+    public Term getClassTerm () {
+        return Term.Plan;
+    }
 }

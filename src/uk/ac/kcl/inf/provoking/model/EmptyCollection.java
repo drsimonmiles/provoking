@@ -12,4 +12,9 @@ public class EmptyCollection extends Collection {
     public Term[] getClassTerms () {
         return CLASS_TERMS;
     }
+    
+    @Override
+    public Term getClassTerm () {
+        return Term.EmptyCollection;
+    }
 }

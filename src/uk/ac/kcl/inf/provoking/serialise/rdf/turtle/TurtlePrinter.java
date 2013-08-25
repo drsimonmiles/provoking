@@ -62,6 +62,10 @@ public class TurtlePrinter {
         _output.println ();
         _serialiser.serialise (document);
     }
+    
+    public void setExplicitSuperclasses (boolean explitSuperclasses) {
+        _serialiser.setExplicitSuperclasses (explitSuperclasses);
+    }
 
     class TurtlePrinterTriplesListener implements TriplesListener {
         public void blank (String blank) {
