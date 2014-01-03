@@ -1,10 +1,13 @@
 package uk.ac.kcl.inf.provoking.builder;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 import uk.ac.kcl.inf.provoking.model.*;
 import uk.ac.kcl.inf.provoking.model.util.AttributeHolder;
@@ -58,7 +61,13 @@ public class ProvBuilder {
      * If true, relations (as well as activities, entities etc.) will be given newly created identifiers.
      */
     private boolean _nameRelations;
-
+    /**
+     * For extensions of the builder, this object can be used to denote (in a extension-specific way)
+     * the type of description currently being built. If this object is non-null when a new description is
+     * created, its toString() method will be called to get the identifier start string.
+     */
+    private Class _extendedDescriptionKind;
+    
     /**
      * Create a builder that adds descriptions to an new document, and
      * generates new URI identifiers using a UniqueURIGenerator, with every identifier
@@ -92,6 +101,7 @@ public class ProvBuilder {
         _idgen = idgen;
         _bookmarksAsLabels = false;
         _nameRelations = false;
+        _extendedDescriptionKind = null;
         setPrefix ("prov:", Term.PROV_NS);
         recogniseURIScheme ("http");
         recogniseURIScheme ("mailto");
@@ -160,9 +170,16 @@ public class ProvBuilder {
     }
 
     public ProvBuilder activity (Date started, Date ended, String... attributes) throws ProvBuildException {
-        return addActivity (new Activity (idGen ("Activity", attributes), started, ended), true, attributes);
+        //return addActivity (new Activity (idGen ("Activity", attributes), started, ended), true, attributes);
+        Object id = idGen (getIDStartString ("Activity"), attributes);
+        Activity activity = (Activity) createDescription (id, Activity.class);
+        
+        activity.setStartedAt (started);
+        activity.setEndedAt (ended);
+        
+        return addActivity (activity, true, attributes);
     }
-
+           
     public ProvBuilder activity (String... attributes) throws ProvBuildException {
         Description bookmarked;
 
@@ -322,6 +339,20 @@ public class ProvBuilder {
         return addEntity (new Collection (idGen ("Collection", attributes)), true, attributes);
     }
         
+    private Description createDescription (Object id, Class kind) {
+        try {
+            if (getExtendedDescriptionKind () != null) {
+                kind = getExtendedDescriptionKind ();
+            }
+            setExtendedDescriptionKind (null);
+            return (Description) kind.getConstructor (Object.class).newInstance (id);
+        } catch (NoSuchMethodException problem) {
+            throw new ProvBuildException ("Extended description type " + kind.getSimpleName () + " must have a constructor taking only an Object ID", problem);
+        } catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException problem) {
+            throw new ProvBuildException ("Could not create extended description type " + kind.getSimpleName (), problem);
+        }
+    }
+
     public ProvBuilder emptyCollection (String... attributes) {
         Description bookmarked;
 
@@ -384,11 +415,27 @@ public class ProvBuilder {
         return (Entity) _current;
     }
 
+    protected Class getExtendedDescriptionKind () {
+        return _extendedDescriptionKind;
+    }
+    
+    private String getIDStartString (String provTypeName) {
+        if (getExtendedDescriptionKind () == null) {
+            return provTypeName;
+        } else {
+            return getExtendedDescriptionKind ().getSimpleName ();
+        }
+    }
+    
     private Influenceable getInfluenceable (String edgeType) throws ProvBuildException {
         if (_current == null || !(_current instanceof Influenceable)) {
             throw new ProvBuildException (edgeType + " only applies to activites, agents or entities");
         }
         return (Influenceable) _current;
+    }
+    
+    public Description getLastAdded () {
+        return _current;
     }
 
     public ProvBuilder hadMember () throws ProvBuildException {
@@ -562,6 +609,10 @@ public class ProvBuilder {
     public ProvBuilder setBookmarksAsLabels (boolean bookmarksAsLabels) {
         _bookmarksAsLabels = bookmarksAsLabels;
         return this;
+    }
+    
+    protected void setExtendedDescriptionKind (Class kind) {
+        _extendedDescriptionKind = kind;
     }
 
     public ProvBuilder setNameRelations (boolean nameRelations) {
